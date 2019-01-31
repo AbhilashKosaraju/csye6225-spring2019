@@ -10,18 +10,11 @@
 |Vrushali Muralidhar Patil|001200648|patil.vr@husky.neu.edu|
 
 ## Technology Stack
--Operating System: 
---Linux Based Operating System: Ubuntu
--Programming Language:
---Java
--Relational Database
---MySQL
--Backend Framework¶
---Spring MVC, Hibernate
--UI Framework
---None
--CSS
---N/A
+
+| Operating System | Programming Language | Database | Framework | UI Framework |
+| --- | --- | --- | --- | --- |
+| Linux Based Operating System: Ubuntu | JAVA | MySQL | Spring MVC, Hibernate | None |
+
 ## Build Instructions
 
 

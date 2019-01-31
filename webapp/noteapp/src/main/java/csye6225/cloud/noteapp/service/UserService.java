@@ -6,6 +6,7 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import csye6225.cloud.noteapp.model.User;
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -15,6 +16,10 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     public List<User> getAllUsers() throws AppException {
         try {
@@ -29,26 +34,24 @@ public class UserService {
 
     public User createUser(User user) throws AppException {
         try {
-            System.out.println(user.toString());
+            System.out.println(user.getPassword());
 
             List<User> userList = getAllUsers();
             for (User u : userList) {
                 if (u.getEmail().equals(user.getEmail())) {
                     return null;
                 }
-                break;
             }
-            byte[] bytesEncoded = Base64.encodeBase64(user.getPassword().getBytes());
-            String pass = new String(bytesEncoded);
             User newuser = new User();
             newuser.setEmail(user.getEmail());
-            newuser.setPassword(pass);
+            newuser.setPassword(passwordEncoder.encode(user.getPassword()));
+
+            System.out.println(newuser.getPassword());
+
             return userRepository.save(newuser);
         } catch (DataException e){
-            //LOG.error(e.getMessage());
             throw new AppException(400, e.getMessage());
         } catch (Exception e) {
-            //LOG.error("Error creating person", e);
             throw new AppException("Error creating person");
         }
     }

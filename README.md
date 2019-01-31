@@ -17,12 +17,17 @@
 
 ## Build Instructions
 
+The noteapp web API is being developed and built in the Intellij IDE. 
+Postman tool is being used as API client for testing the web API 
+developed. 
 
 ## Deploy Instructions
 
 
 ## Running Tests
 
+Unit tests in the JUnit framework have been developed to verify various 
+working functionalities( REST endpoints) of the noteapp Web API. 
 
 ## CI/CD
 

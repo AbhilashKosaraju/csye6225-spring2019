@@ -11,6 +11,9 @@
 
 ## Technology Stack
 
+| Operating System | Programming Language | Database | Framework | UI Framework |
+| --- | --- | --- | --- | --- |
+| Linux Based Operating System: Ubuntu | JAVA | MySQL | Spring MVC, Hibernate | None |
 
 ## Build Instructions
 

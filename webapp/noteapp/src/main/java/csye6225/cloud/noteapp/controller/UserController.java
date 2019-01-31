@@ -36,11 +36,11 @@ public class UserController {
     public static final Pattern email_pattern = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
 
-    @GetMapping("/getallusers")
+    /*@GetMapping("/getallusers")
     public ResponseEntity<List<User>> getAllUsers() throws AppException {
         List<User> personList = userService.getAllUsers();
         return ResponseEntity.ok(personList);
-    }
+    }*/
 
     @PostMapping(value = "/user/register")
     public ResponseEntity<String> createUser(@Valid @RequestBody User user) throws AppException {
@@ -114,7 +114,7 @@ public class UserController {
             return "Unauthorized";
     }
 
-    @PostMapping(value = "/login")
+    /*@PostMapping(value = "/login")
     public String verifyPerson(@Valid @RequestBody User user) throws AppException{
         List<User> userList = userService.getAllUsers();
         for(User u : userList){
@@ -130,6 +130,6 @@ public class UserController {
             }
         }
         return "Invalid credentials. Please try again.";
-    }
+    }*/
 
 }

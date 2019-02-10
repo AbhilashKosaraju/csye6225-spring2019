@@ -3,6 +3,7 @@ package csye6225.cloud.noteapp.controller;
 import csye6225.cloud.noteapp.exception.AppException;
 import csye6225.cloud.noteapp.model.User;
 import csye6225.cloud.noteapp.repository.UserRepository;
+import csye6225.cloud.noteapp.service.CustomUserDetailService;
 import csye6225.cloud.noteapp.service.GetUserDetailsService;
 import csye6225.cloud.noteapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private GetUserDetailsService udService;
+    private CustomUserDetailService udService;
 
     @Autowired
     private UserService userService;
@@ -106,10 +107,11 @@ public class UserController {
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String date = timestamp.toString();
-        String email = udService.userName;
+        String email = udService.user;
         System.out.println(email);
-        if(userRepository.findUserByEmail(email)!=null)
-            return date;
+        if(userRepository.findUserByEmail(email)!=null){
+            System.out.println("This is inisde tbe controller"+email);
+            return date;}
         else
             return "Unauthorized";
     }

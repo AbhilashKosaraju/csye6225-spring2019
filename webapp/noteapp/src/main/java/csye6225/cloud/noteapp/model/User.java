@@ -23,6 +23,11 @@ public class User {
         this.password = password;
     }
 
+    public User(User user) {
+        this.email = user.getEmail();
+        this.password = user.getPassword();
+    }
+
     public String getEmail() {
         return email;
     }

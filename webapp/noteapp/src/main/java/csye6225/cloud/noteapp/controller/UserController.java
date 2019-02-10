@@ -6,8 +6,11 @@ import csye6225.cloud.noteapp.repository.UserRepository;
 import csye6225.cloud.noteapp.service.CustomUserDetailService;
 import csye6225.cloud.noteapp.service.GetUserDetailsService;
 import csye6225.cloud.noteapp.service.UserService;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +47,7 @@ public class UserController {
     }*/
 
     @PostMapping(value = "/user/register")
-    public ResponseEntity<String> createUser(@Valid @RequestBody User user) throws AppException {
+    public ResponseEntity<Object> createUser(@Valid @RequestBody User user) throws AppException, JSONException {
 
         HttpHeaders headers = new HttpHeaders();
         Matcher matcher = email_pattern.matcher(user.getEmail());
@@ -95,8 +98,11 @@ public class UserController {
 
 
         User u = userService.createUser(user);
-        if(u != null)
-            return ResponseEntity.ok("{'success':'User created.'}");
+        if(u != null) {
+            JSONObject entity = new JSONObject();
+            entity.put("success","User created.");
+            return new ResponseEntity<Object>(entity.toString(), HttpStatus.OK);
+        }
         else
             return ResponseEntity.badRequest().body("{'error':'User already exists.'}");
     }

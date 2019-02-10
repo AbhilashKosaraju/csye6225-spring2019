@@ -1,6 +1,5 @@
 package csye6225.cloud.noteapp.service;
 
-import csye6225.cloud.noteapp.model.User;
 import csye6225.cloud.noteapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;

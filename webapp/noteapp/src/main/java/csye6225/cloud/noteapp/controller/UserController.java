@@ -109,8 +109,9 @@ public class UserController {
         String date = timestamp.toString();
         String email = udService.user;
         System.out.println(email);
-        if(userRepository.findUserByEmail(email)!=null)
-            return date;
+        if(userRepository.findUserByEmail(email)!=null){
+            System.out.println("This is inisde tbe controller"+email);
+            return date;}
         else
             return "Unauthorized";
     }

@@ -1,6 +1,7 @@
 package csye6225.cloud.noteapp.controller;
 
 import csye6225.cloud.noteapp.exception.AppException;
+import csye6225.cloud.noteapp.model.Notes;
 import csye6225.cloud.noteapp.model.User;
 import csye6225.cloud.noteapp.repository.UserRepository;
 import csye6225.cloud.noteapp.service.CustomUserDetailService;
@@ -122,6 +123,33 @@ public class UserController {
             return "Unauthorized";
     }
 
+    @GetMapping("/note")
+    public String getNotes(){
+        String email = udService.user;
+        System.out.println(email);
+        if(userRepository.findUserByEmail(email).isPresent())
+        {
+            System.out.println("Inside the note request");
+            return "Able to create a note";
+        }
+        else{
+            return "Not authorized to create a note";
+        }
+//        return "Create a note";
+    }
+
+    @PostMapping(value= "/note", produces = "MediaType.APPLICATION_JSON_VALUE")
+    public ResponseEntity<Object> createNote(@Valid @RequestBody Notes note){
+
+        return null;
+
+    }
+
+    @GetMapping("/note/{id}")
+    public Notes getNote( @PathVariable final int noteId){
+
+        return null;
+    }
     /*@PostMapping(value = "/login")
     public String verifyPerson(@Valid @RequestBody User user) throws AppException{
         List<User> userList = userService.getAllUsers();
@@ -139,5 +167,8 @@ public class UserController {
         }
         return "Invalid credentials. Please try again.";
     }*/
+
+
+
 
 }

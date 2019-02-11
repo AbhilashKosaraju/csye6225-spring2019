@@ -55,9 +55,16 @@ public class UserController {
         boolean isEmail = matcher.find();
 
         if(!isEmail){
-            headers.add("Response-Code","422");
+
+            JSONObject entity = new JSONObject();
+            entity.put("Error","Not a valid email.");
+            return new ResponseEntity<Object>(entity.toString(), HttpStatus.UNPROCESSABLE_ENTITY);
+
+       /*     headers.add("Response-Code","422");
             headers.add("Response-Type","Unprocessable entity");
             return ResponseEntity.badRequest().headers(headers).body("{'error':'Not a valid email.'}");
+            */
+
         }
 
         String password = user.getPassword();
@@ -87,14 +94,25 @@ public class UserController {
             if (hasLetter && hasDigit) {
                 System.out.println("STRONG");
             } else {
+                JSONObject entity = new JSONObject();
+                entity.put("Error","Not a strong Password.");
+                return new ResponseEntity<Object>(entity.toString(), HttpStatus.UNPROCESSABLE_ENTITY);
+                /*
                 headers.add("Response-Code","422");
                 headers.add("Response-Type","Unprocessable entity");
                 return ResponseEntity.badRequest().headers(headers).body("{'error':'Not a strong password.'}");
+                */
             }
         } else {
+            JSONObject entity = new JSONObject();
+            entity.put("Error","Not a strong Password.");
+            return new ResponseEntity<Object>(entity.toString(), HttpStatus.UNPROCESSABLE_ENTITY);
+            /*
             headers.add("Response-Code","422");
             headers.add("Response-Type","Unprocessable entity");
             return ResponseEntity.badRequest().headers(headers).body("{'error':'Not a strong password'}");
+            */
+
         }
 
 
@@ -102,10 +120,14 @@ public class UserController {
         if(u != null) {
             JSONObject entity = new JSONObject();
             entity.put("success","User created.");
-            return new ResponseEntity<Object>(entity.toString(), HttpStatus.OK);
+            return new ResponseEntity<Object>(entity.toString(), HttpStatus.CREATED);
         }
-        else
-            return ResponseEntity.badRequest().body("{'error':'User already exists.'}");
+        else{
+            JSONObject entity = new JSONObject();
+            entity.put("error","User already exists.");
+            return new ResponseEntity<Object>(entity.toString(), HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     @GetMapping("/")

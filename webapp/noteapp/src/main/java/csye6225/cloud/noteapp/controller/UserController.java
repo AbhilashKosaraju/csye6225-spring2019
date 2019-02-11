@@ -160,7 +160,7 @@ public class UserController {
 //        return "Create a note";
     }
 
-    @PostMapping(value= "/note", produces = "MediaType.APPLICATION_JSON_VALUE")
+    @PostMapping(value= "/note")
     public ResponseEntity<Object> createNote(@Valid @RequestBody Notes note){
 
         return null;
@@ -169,6 +169,19 @@ public class UserController {
 
     @GetMapping("/note/{id}")
     public Notes getNote( @PathVariable final int noteId){
+
+        return null;
+    }
+
+    @PutMapping("/note/{id}")
+    public User updateUser( @PathVariable final int noteId){
+
+        return null;
+
+    }
+
+    @DeleteMapping("/note/{id}")
+    public ResponseEntity<Void> deleteNote( @PathVariable final int noteId){
 
         return null;
     }

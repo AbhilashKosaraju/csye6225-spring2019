@@ -1,16 +1,13 @@
 package csye6225.cloud.noteapp.controller;
 
+import com.google.gson.JsonObject;
 import csye6225.cloud.noteapp.exception.AppException;
 import csye6225.cloud.noteapp.model.User;
 import csye6225.cloud.noteapp.repository.UserRepository;
 import csye6225.cloud.noteapp.service.CustomUserDetailService;
 import csye6225.cloud.noteapp.service.GetUserDetailsService;
 import csye6225.cloud.noteapp.service.UserService;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -39,31 +36,16 @@ public class UserController {
 
     public static final Pattern email_pattern = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
-
-    /*@GetMapping("/getallusers")
-    public ResponseEntity<List<User>> getAllUsers() throws AppException {
-        List<User> personList = userService.getAllUsers();
-        return ResponseEntity.ok(personList);
-    }*/
-
     @PostMapping(value = "/user/register")
-    public ResponseEntity<Object> createUser(@Valid @RequestBody User user) throws AppException, JSONException {
+    public ResponseEntity<Object> createUser(@Valid @RequestBody User user) throws AppException{
 
-        HttpHeaders headers = new HttpHeaders();
         Matcher matcher = email_pattern.matcher(user.getEmail());
         boolean isEmail = matcher.find();
 
         if(!isEmail){
-
-            JSONObject entity = new JSONObject();
-            entity.put("Error","Not a valid email.");
-            return new ResponseEntity<Object>(entity.toString(), HttpStatus.UNPROCESSABLE_ENTITY);
-
-       /*     headers.add("Response-Code","422");
-            headers.add("Response-Type","Unprocessable entity");
-            return ResponseEntity.badRequest().headers(headers).body("{'error':'Not a valid email.'}");
-            */
-
+            JsonObject entity = new JsonObject();
+            entity.addProperty("Error","Not a valid email");
+            return ResponseEntity.badRequest().body(entity.toString());
         }
 
         String password = user.getPassword();
@@ -93,45 +75,33 @@ public class UserController {
             if (hasLetter && hasDigit) {
                 System.out.println("STRONG");
             } else {
-                JSONObject entity = new JSONObject();
-                entity.put("Error","Not a strong Password.");
-                return new ResponseEntity<Object>(entity.toString(), HttpStatus.UNPROCESSABLE_ENTITY);
-                /*
-                headers.add("Response-Code","422");
-                headers.add("Response-Type","Unprocessable entity");
-                return ResponseEntity.badRequest().headers(headers).body("{'error':'Not a strong password.'}");
-                */
+                JsonObject entity = new JsonObject();
+                entity.addProperty("Error","Not a strong Password");
+                return ResponseEntity.unprocessableEntity().body(entity.toString());
             }
         } else {
-            JSONObject entity = new JSONObject();
-            entity.put("Error","Not a strong Password.");
-            return new ResponseEntity<Object>(entity.toString(), HttpStatus.UNPROCESSABLE_ENTITY);
-            /*
-            headers.add("Response-Code","422");
-            headers.add("Response-Type","Unprocessable entity");
-            return ResponseEntity.badRequest().headers(headers).body("{'error':'Not a strong password'}");
-            */
-
+            JsonObject entity = new JsonObject();
+            entity.addProperty("Error","Not a strong Password");
+            return ResponseEntity.unprocessableEntity().body(entity.toString());
         }
 
 
         User u = userService.createUser(user);
         if(u != null) {
-            JSONObject entity = new JSONObject();
-            entity.put("success","User created.");
-            return new ResponseEntity<Object>(entity.toString(), HttpStatus.CREATED);
+            JsonObject entity = new JsonObject();
+            entity.addProperty("Success","User created.");
+            return ResponseEntity.unprocessableEntity().body(entity.toString());
         }
         else{
-            JSONObject entity = new JSONObject();
-            entity.put("error","User already exists.");
-            return new ResponseEntity<Object>(entity.toString(), HttpStatus.BAD_REQUEST);
+            JsonObject entity = new JsonObject();
+            entity.addProperty("Error","User already exists.");
+            return ResponseEntity.badRequest().body(entity.toString());
         }
 
     }
 
     @GetMapping("/")
     public String getTime(){
-
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String date = timestamp.toString();
@@ -143,23 +113,5 @@ public class UserController {
         else
             return "Unauthorized";
     }
-
-    /*@PostMapping(value = "/login")
-    public String verifyPerson(@Valid @RequestBody User user) throws AppException{
-        List<User> userList = userService.getAllUsers();
-        for(User u : userList){
-            if(u.getEmail().equals(user.getEmail())){
-                CharSequence match = user.getPassword();
-                System.out.println(user.getPassword());
-                System.out.println(u.getPassword());
-                if(passwordEncoder.matches(match,u.getPassword())){
-                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                    String date = timestamp.toString();
-                    return date;
-                }
-            }
-        }
-        return "Invalid credentials. Please try again.";
-    }*/
 
 }

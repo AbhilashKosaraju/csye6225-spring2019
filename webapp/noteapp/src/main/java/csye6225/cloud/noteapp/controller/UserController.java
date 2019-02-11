@@ -2,6 +2,7 @@ package csye6225.cloud.noteapp.controller;
 
 import com.google.gson.JsonObject;
 import csye6225.cloud.noteapp.exception.AppException;
+import csye6225.cloud.noteapp.model.Notes;
 import csye6225.cloud.noteapp.model.User;
 import csye6225.cloud.noteapp.repository.UserRepository;
 import csye6225.cloud.noteapp.service.CustomUserDetailService;
@@ -19,7 +20,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @RestController
-@RequestMapping("/")
 public class UserController {
 
     @Autowired

@@ -5,6 +5,7 @@ import csye6225.cloud.noteapp.exception.AppException;
 import csye6225.cloud.noteapp.model.Notes;
 import csye6225.cloud.noteapp.model.User;
 import csye6225.cloud.noteapp.repository.NotesRepository;
+import csye6225.cloud.noteapp.repository.UserRepository;
 import csye6225.cloud.noteapp.service.CustomUserDetailService;
 import csye6225.cloud.noteapp.service.NotesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +13,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Date;
 import java.util.List;
 
 @RestController
 public class NotesController {
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private NotesRepository notesRepository;
 
     @Autowired
     private CustomUserDetailService udService;

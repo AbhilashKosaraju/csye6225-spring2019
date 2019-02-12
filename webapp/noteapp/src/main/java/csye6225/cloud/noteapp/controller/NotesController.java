@@ -2,6 +2,7 @@ package csye6225.cloud.noteapp.controller;
 
 import csye6225.cloud.noteapp.model.Notes;
 import csye6225.cloud.noteapp.model.User;
+import csye6225.cloud.noteapp.repository.NotesRepository;
 import csye6225.cloud.noteapp.repository.UserRepository;
 import csye6225.cloud.noteapp.service.CustomUserDetailService;
 import csye6225.cloud.noteapp.service.UserService;
@@ -16,6 +17,9 @@ import javax.validation.Valid;
 public class NotesController {
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    NotesRepository notesRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;

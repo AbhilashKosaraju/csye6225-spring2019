@@ -2,11 +2,9 @@ package csye6225.cloud.noteapp.controller;
 
 import com.google.gson.JsonObject;
 import csye6225.cloud.noteapp.exception.AppException;
-import csye6225.cloud.noteapp.model.Notes;
 import csye6225.cloud.noteapp.model.User;
 import csye6225.cloud.noteapp.repository.UserRepository;
 import csye6225.cloud.noteapp.service.CustomUserDetailService;
-import csye6225.cloud.noteapp.service.GetUserDetailsService;
 import csye6225.cloud.noteapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

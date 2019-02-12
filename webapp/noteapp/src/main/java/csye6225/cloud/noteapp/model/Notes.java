@@ -16,6 +16,13 @@ public class Notes {
     @Column(name="userId")
     private int userId;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="userId", referencedColumnName = "email")
+    private User user;
+
+    public Notes() {
+    }
+
     public Notes(String notes){
         this.notes = notes;
     }

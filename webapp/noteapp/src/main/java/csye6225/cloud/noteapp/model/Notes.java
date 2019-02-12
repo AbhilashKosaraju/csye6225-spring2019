@@ -1,6 +1,5 @@
 package csye6225.cloud.noteapp.model;
 
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.UUID;
@@ -9,8 +8,6 @@ import java.util.UUID;
 @Table(name = "notes")
 public class Notes {
     @Id
-    @GeneratedValue(generator="system-uuid")
-    @GenericGenerator(name="system-uuid", strategy = "uuid")
     @Column(name = "uuid", unique = true)
     private UUID note_id;
 
@@ -51,6 +48,10 @@ public class Notes {
 
     public String getUser_id() {
         return user_id;
+    }
+
+    public void setNote_id(UUID note_id) {
+        this.note_id = note_id;
     }
 
     public void setUser_id(String user_id) {

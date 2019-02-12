@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class NotesService {
@@ -19,7 +20,7 @@ public class NotesService {
     private NotesRepository noteRepository;
 
     @Autowired
-    private CustomUserDetailService udService;
+    private UserService userService;
 
 
     public List<Notes> getAllNotes() throws AppException {
@@ -42,11 +43,13 @@ public class NotesService {
                 }
             }
             Notes newnote = new Notes();
+            UUID uuid = UUID.randomUUID();
+            newnote.setNote_id(uuid);
             newnote.setTitle(title);
             newnote.setContent(content);
             newnote.setCreated_ts(new Date().toString());
             newnote.setUpdates_ts(new Date().toString());
-            newnote.setUser_id(udService.user);
+            //newnote.setUser_id();
 
             return noteRepository.save(newnote);
         } catch (DataException e){

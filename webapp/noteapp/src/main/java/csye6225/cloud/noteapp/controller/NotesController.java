@@ -1,49 +1,59 @@
 package csye6225.cloud.noteapp.controller;
 
+import com.google.gson.JsonObject;
+import csye6225.cloud.noteapp.exception.AppException;
 import csye6225.cloud.noteapp.model.Notes;
 import csye6225.cloud.noteapp.model.User;
-import csye6225.cloud.noteapp.repository.UserRepository;
+import csye6225.cloud.noteapp.repository.NotesRepository;
 import csye6225.cloud.noteapp.service.CustomUserDetailService;
-import csye6225.cloud.noteapp.service.UserService;
+import csye6225.cloud.noteapp.service.NotesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Date;
+import java.util.List;
 
 @RestController
 public class NotesController {
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private CustomUserDetailService udService;
 
     @Autowired
-    private UserService userService;
+    private NotesService notesService;
 
     @GetMapping("/note")
-    public String getNotes(){
+    public String getNotes() throws AppException {
         String email = udService.user;
-        System.out.println(email);
-        if(userRepository.findUserByEmail(email).isPresent())
-        {
-            System.out.println("Inside the note request");
-            return "Able to create a note";
-        }
-        else{
-            return "Not authorized to create a note";
-        }
+        List<Notes> notesList = notesService.getAllNotes();
+        JsonObject entity = new JsonObject();
+        entity.addProperty("User ID", udService.user);
+        entity.addProperty("Notes", notesList.toString());
+        return entity.toString();
     }
 
     @PostMapping(value= "/note")
-    public ResponseEntity<Object> createNote(@Valid @RequestBody Notes note){
-
-        return null;
+    public ResponseEntity<Object> createNote(@Valid @RequestBody Notes note) throws AppException {
+        String title = note.getTitle();
+        String content = note.getContent();
+        if(title != null && content != null) {
+            Notes nt = notesService.createNote(title,content);
+            if(nt != null) {
+                JsonObject entity = new JsonObject();
+                entity.addProperty("Success", "Note created for " + udService.user);
+                return ResponseEntity.ok().body(entity.toString());
+            }else{
+                JsonObject entity = new JsonObject();
+                entity.addProperty("Error","A note with same title already exists. Please create another or update old one.");
+                return ResponseEntity.badRequest().body(entity.toString());
+            }
+        }else {
+            JsonObject entity = new JsonObject();
+            entity.addProperty("Error","Please send the necessary parameters to store note.");
+            return ResponseEntity.badRequest().body(entity.toString());
+        }
 
     }
 

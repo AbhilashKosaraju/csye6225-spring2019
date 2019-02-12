@@ -1,61 +1,83 @@
 package csye6225.cloud.noteapp.model;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Table(name = "notes")
 public class Notes {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="id")
-    private int noteId;
+    @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
+    @Column(name = "uuid", unique = true)
+    private UUID note_id;
 
-    @Column(name="notes")
-    private String notes;
+    @Column(name="title")
+    private String title;
 
-    @Column(name="userId")
-    private int userId;
+    @Column(name="content")
+    private String content;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="userId", referencedColumnName = "email")
-    private User user;
+    @Column(name="user_id")
+    private String user_id;
 
-    public Notes() {
+    @Column(name="created_ts")
+    private String created_ts;
+
+    @Column(name="updated_ts")
+    private String updates_ts;
+
+    public String getTitle() {
+        return title;
     }
 
-    public Notes(String notes){
-        this.notes = notes;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public int getUserId() {
-        return userId;
+    public String getContent() {
+        return content;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public int getNoteId() {
-        return noteId;
+    public UUID getNote_id() {
+        return note_id;
     }
 
-    public void setNoteId(int noteId) {
-        this.noteId = noteId;
+    public String getUser_id() {
+        return user_id;
     }
 
-    public String getNotes() {
-        return notes;
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
     }
 
-    public void setNotes(String notes) {
-        this.notes = notes;
+    public String getCreated_ts() {
+        return created_ts;
+    }
+
+    public void setCreated_ts(String created_ts) {
+        this.created_ts = created_ts;
+    }
+
+    public String getUpdates_ts() {
+        return updates_ts;
+    }
+
+    public void setUpdates_ts(String updates_ts) {
+        this.updates_ts = updates_ts;
     }
 
     @Override
     public String toString() {
         return "Notes{" +
-                "noteId=" + noteId +
-                ", notes='" + notes + '\'' +
+                "noteId=" + note_id +
+                ", notes='" + content + '\'' +
                 '}';
     }
 }

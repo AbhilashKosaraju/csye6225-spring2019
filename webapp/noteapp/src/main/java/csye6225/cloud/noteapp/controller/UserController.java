@@ -8,7 +8,6 @@ import csye6225.cloud.noteapp.service.CustomUserDetailService;
 import csye6225.cloud.noteapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -24,10 +23,7 @@ public class UserController {
     UserRepository userRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private CustomUserDetailService udService;
+    private CustomUserDetailService customudService;
 
     @Autowired
     private UserService userService;
@@ -103,7 +99,7 @@ public class UserController {
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String date = timestamp.toString();
-        String email = udService.user;
+        String email = customudService.user;
         System.out.println(email);
         if(userRepository.findUserByEmail(email)!=null){
             System.out.println("This is inisde tbe controller"+email);

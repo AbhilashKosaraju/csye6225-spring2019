@@ -76,7 +76,7 @@ public class UserController {
         if(u != null) {
             JsonObject entity = new JsonObject();
             entity.addProperty("Success","User created.");
-            return ResponseEntity.unprocessableEntity().body(entity.toString());
+            return ResponseEntity.status(201).body(entity.toString());
         }
         else{
             JsonObject entity = new JsonObject();

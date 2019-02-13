@@ -5,7 +5,6 @@ import csye6225.cloud.noteapp.model.Notes;
 import csye6225.cloud.noteapp.repository.NotesRepository;
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.security.Principal;
@@ -20,10 +19,6 @@ public class NotesService {
     @Autowired
     private NotesRepository noteRepository;
 
-    @Autowired
-    private UserService userService;
-
-
     public List<Notes> getAllNotes() throws AppException {
         try {
             List<Notes> notesList = noteRepository.findAll();
@@ -35,21 +30,7 @@ public class NotesService {
         }
     }
 
-    public List<Notes> getUserNotes( Principal principal) throws AppException{
-        try{
-            Iterable<Notes> notesList = noteRepository.findAll();
-            List<Notes> userNotes = new ArrayList<Notes>();
-            for(Notes note : notesList) {
-                if (note.getUser_id().equals(principal.getName()))
-                    userNotes.add(note);
-            }
-            return userNotes;
-        } catch (Exception e){
-            throw new AppException(400,e.getMessage());
-        }
-    }
-
-    public Notes createNote(String title, String content, Principal principal) throws AppException {
+    public Notes createNote(String title, String content,String name) throws AppException {
         try {
             List<Notes> notesList  = getAllNotes();
             for (Notes n : notesList) {
@@ -64,12 +45,13 @@ public class NotesService {
             newnote.setContent(content);
             newnote.setCreated_ts(new Date().toString());
             newnote.setUpdates_ts(new Date().toString());
-            newnote.setUser_id(principal.getName());
+            newnote.setUser_id(name);
+
             return noteRepository.save(newnote);
         } catch (DataException e){
             throw new AppException(400, e.getMessage());
         } catch (Exception e) {
-            throw new AppException("Error creating person");
+            throw new AppException("Error creating note");
         }
     }
 
@@ -98,6 +80,20 @@ public class NotesService {
                 noteRepository.save(note);
                 return;
             }
+        }
+    }
+
+    public List<Notes> getUserNotes(Principal principal) throws AppException{
+        try{
+            Iterable<Notes> notesList = noteRepository.findAll();
+            List<Notes> userNotes = new ArrayList<Notes>();
+            for(Notes note : notesList) {
+                if (note.getUser_id().equals(principal.getName()))
+                    userNotes.add(note);
+            }
+            return userNotes;
+        } catch (Exception e){
+            throw new AppException(400,e.getMessage());
         }
     }
 

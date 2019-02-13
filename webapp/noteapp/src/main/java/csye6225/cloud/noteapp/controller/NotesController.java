@@ -9,6 +9,7 @@ import csye6225.cloud.noteapp.service.NotesService;
 import csye6225.cloud.noteapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,29 +26,25 @@ public class NotesController {
     private NotesRepository notesRepository;
 
     @Autowired
-    private UserService udService;
-
-    @Autowired
     private NotesService notesService;
 
     @GetMapping("/note")
     public String getNotes(Principal principal) throws AppException {
         List<Notes> notesList = notesService.getUserNotes(principal);
         JsonObject entity = new JsonObject();
-        //entity.addProperty("User ID", udService.user);
         entity.addProperty("Notes", notesList.toString());
         return entity.toString();
     }
 
     @PostMapping(value= "/note")
-    public ResponseEntity<Object> createNote(@Valid @RequestBody Notes note, Principal principal) throws AppException {
+    public ResponseEntity<Object> createNote(@Valid @RequestBody Notes note,Authentication auth) throws AppException {
         String title = note.getTitle();
         String content = note.getContent();
         if(title != null && content != null) {
-            Notes nt = notesService.createNote(title,content,principal);
+            Notes nt = notesService.createNote(title,content,auth.getName());
             if(nt != null) {
                 JsonObject entity = new JsonObject();
-                //entity.addProperty("Success", "Note created for " + udService.user);
+                entity.addProperty("Success", "Note created");
                 return ResponseEntity.ok().body(entity.toString());
             }else{
                 JsonObject entity = new JsonObject();
@@ -64,7 +61,6 @@ public class NotesController {
 
     @GetMapping("/note/{id}")
     public Notes getNote( @PathVariable final UUID id){
-
         Notes note = notesService.findNotesById(id);
         if(note != null)
            return note;

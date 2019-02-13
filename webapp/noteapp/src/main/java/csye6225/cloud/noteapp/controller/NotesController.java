@@ -3,7 +3,6 @@ package csye6225.cloud.noteapp.controller;
 import com.google.gson.JsonObject;
 import csye6225.cloud.noteapp.exception.AppException;
 import csye6225.cloud.noteapp.model.Notes;
-import csye6225.cloud.noteapp.model.User;
 import csye6225.cloud.noteapp.repository.NotesRepository;
 import csye6225.cloud.noteapp.repository.UserRepository;
 import csye6225.cloud.noteapp.service.NotesService;
@@ -14,7 +13,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class NotesController {
@@ -25,14 +26,11 @@ public class NotesController {
     private NotesRepository notesRepository;
 
     @Autowired
-    private UserService udService;
-
-    @Autowired
     private NotesService notesService;
 
     @GetMapping("/note")
-    public String getNotes(Authentication auth) throws AppException {
-        List<Notes> notesList = notesService.getAllNotes();
+    public String getNotes(Principal principal) throws AppException {
+        List<Notes> notesList = notesService.getUserNotes(principal);
         JsonObject entity = new JsonObject();
         entity.addProperty("Notes", notesList.toString());
         return entity.toString();
@@ -62,22 +60,39 @@ public class NotesController {
     }
 
     @GetMapping("/note/{id}")
-    public Notes getNote( @PathVariable final int noteId){
-
-        return null;
+    public Notes getNote( @PathVariable final UUID id){
+        Notes note = notesService.findNotesById(id);
+        if(note != null)
+           return note;
+        else
+            return new Notes();
     }
 
-    @PutMapping("/note/{id}")
-    public User updateUser(@PathVariable final int noteId){
-
-        return null;
-
+    @PutMapping("/note/{noteId}")
+    public ResponseEntity<Object> updateUser(@RequestBody Notes note,@PathVariable  final UUID noteId){
+        Notes userNotes = notesService.findNotesById(noteId);
+        if (userNotes!=null){
+            notesService.updateNotes(note,noteId);
+            JsonObject entity = new JsonObject();
+            entity.addProperty("Success","Note has been updated.");
+            return ResponseEntity.badRequest().body(entity.toString());
+        }
+        else{
+            System.out.println("This is the error");
+            JsonObject entity = new JsonObject();
+            entity.addProperty("Error","Please send the necessary parameters to store note.");
+            return ResponseEntity.badRequest().body(entity.toString());
+        }
     }
 
     @DeleteMapping("/note/{id}")
-    public ResponseEntity<Void> deleteNote( @PathVariable final int noteId){
+    public ResponseEntity<Object> deleteNote( @PathVariable final UUID id){
 
-        return null;
+        Notes note = notesService.findNotesById(id);
+        notesRepository.delete(note);
+        JsonObject entity = new JsonObject();
+        entity.addProperty("Error","Please send the necessary parameters to store note.");
+        return ResponseEntity.badRequest().body(entity.toString());
     }
 
 }

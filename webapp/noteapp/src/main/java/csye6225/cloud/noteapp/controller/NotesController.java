@@ -6,8 +6,8 @@ import csye6225.cloud.noteapp.model.Notes;
 import csye6225.cloud.noteapp.model.User;
 import csye6225.cloud.noteapp.repository.NotesRepository;
 import csye6225.cloud.noteapp.repository.UserRepository;
-import csye6225.cloud.noteapp.service.CustomUserDetailService;
 import csye6225.cloud.noteapp.service.NotesService;
+import csye6225.cloud.noteapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,17 +24,16 @@ public class NotesController {
     private NotesRepository notesRepository;
 
     @Autowired
-    private CustomUserDetailService udService;
+    private UserService udService;
 
     @Autowired
     private NotesService notesService;
 
     @GetMapping("/note")
     public String getNotes() throws AppException {
-        String email = udService.user;
         List<Notes> notesList = notesService.getAllNotes();
         JsonObject entity = new JsonObject();
-        entity.addProperty("User ID", udService.user);
+        //entity.addProperty("User ID", udService.user);
         entity.addProperty("Notes", notesList.toString());
         return entity.toString();
     }
@@ -47,7 +46,7 @@ public class NotesController {
             Notes nt = notesService.createNote(title,content);
             if(nt != null) {
                 JsonObject entity = new JsonObject();
-                entity.addProperty("Success", "Note created for " + udService.user);
+                //entity.addProperty("Success", "Note created for " + udService.user);
                 return ResponseEntity.ok().body(entity.toString());
             }else{
                 JsonObject entity = new JsonObject();

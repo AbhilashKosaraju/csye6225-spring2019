@@ -4,15 +4,14 @@ import com.google.gson.JsonObject;
 import csye6225.cloud.noteapp.exception.AppException;
 import csye6225.cloud.noteapp.model.User;
 import csye6225.cloud.noteapp.repository.UserRepository;
-import csye6225.cloud.noteapp.service.CustomUserDetailService;
 import csye6225.cloud.noteapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,10 +22,9 @@ public class UserController {
     UserRepository userRepository;
 
     @Autowired
-    private CustomUserDetailService customudService;
-
-    @Autowired
     private UserService userService;
+
+    public static int salt = 10;
 
     public static final Pattern email_pattern = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
@@ -50,21 +48,15 @@ public class UserController {
             for (int i = 0; i < password.length(); i++) {
                 char x = password.charAt(i);
                 if (Character.isLetter(x)) {
-
                     hasLetter = true;
                 }
-
                 else if (Character.isDigit(x)) {
-
                     hasDigit = true;
                 }
-
                 // no need to check further, break the loop
                 if(hasLetter && hasDigit){
-
                     break;
                 }
-
             }
             if (hasLetter && hasDigit) {
                 System.out.println("STRONG");
@@ -79,7 +71,7 @@ public class UserController {
             return ResponseEntity.unprocessableEntity().body(entity.toString());
         }
 
-
+        user.setPassword(hashpw(user.getPassword()));
         User u = userService.createUser(user);
         if(u != null) {
             JsonObject entity = new JsonObject();
@@ -96,16 +88,15 @@ public class UserController {
 
     @GetMapping("/")
     public String getTime(){
-
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String date = timestamp.toString();
-        String email = customudService.user;
-        System.out.println(email);
-        if(userRepository.findUserByEmail(email)!=null){
-            System.out.println("This is inisde tbe controller"+email);
-            return date;}
-        else
-            return "Unauthorized";
+        JsonObject entity = new JsonObject();
+        entity.addProperty("Date",date);
+        return entity.toString();
+
     }
 
+    public String hashpw(String pass){
+        return BCrypt.hashpw(pass,BCrypt.gensalt(salt));
+    }
 }

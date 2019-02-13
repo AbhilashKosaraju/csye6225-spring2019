@@ -1,6 +1,5 @@
 package csye6225.cloud.noteapp.service;
 
-import csye6225.cloud.noteapp.model.User;
 import csye6225.cloud.noteapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -24,18 +23,19 @@ public class GetUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        userName = username;
-        System.out.println(username);
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findUserByEmail(username);
-
-
-        UserBuilder builder = null;
-        if(user != null){
-            builder = org.springframework.security.core.userdetails.User.withUsername(username);
-            builder.password(passwordEncoder.encode(user.getPassword()));
-            builder.roles("USER");
-        }
-        return builder.build();
+//        userName = username;
+//        System.out.println(username);
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        User user = userRepository.findUserByEmail(username);
+//
+//
+//        UserBuilder builder = null;
+//        if(user != null){
+//            builder = org.springframework.security.core.userdetails.User.withUsername(username);
+//            builder.password(passwordEncoder.encode(user.getPassword()));
+//            builder.roles("USER");
+//        }
+//        return builder.build();
+        return null;
     }
 }

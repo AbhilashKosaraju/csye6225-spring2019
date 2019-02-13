@@ -1,6 +1,6 @@
 package csye6225.cloud.noteapp.Configuration;
 
-
+import csye6225.cloud.noteapp.service.CustomUserDetailService;
 import csye6225.cloud.noteapp.service.GetUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +24,9 @@ public class configuration  extends WebSecurityConfigurerAdapter {
     @Autowired
     private GetUserDetailsService getUDService;
 
+    @Autowired
+    private CustomUserDetailService userDetailService;
+
     @Bean
     public UserDetailsService userDetailsService() {
         return new GetUserDetailsService();
@@ -31,7 +34,8 @@ public class configuration  extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(authenticationProvider());
+        auth.userDetailsService(userDetailService).passwordEncoder(passwordEncoder());
+        //auth.authenticationProvider(authenticationProvider());
     }
 
     @Bean

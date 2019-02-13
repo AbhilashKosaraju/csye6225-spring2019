@@ -1,6 +1,7 @@
 package csye6225.cloud.noteapp.model;
 
 
+import com.google.gson.JsonObject;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -79,9 +80,12 @@ public class Notes {
 
     @Override
     public String toString() {
-        return "Notes{" +
-                "noteId=" + note_id + " "+ "nodeTitle=" + title + " " + "userId=" + user_id +
-                " notes= " + content + '\'' +
-                '}';
+        JsonObject entity = new JsonObject();
+        entity.addProperty("noteId",this.note_id.toString());
+        entity.addProperty("title",this.title);
+        entity.addProperty("content",this.content);
+        entity.addProperty("created_ts",this.created_ts);
+        entity.addProperty("updated_ts",this.updates_ts);
+        return entity.toString();
     }
 }

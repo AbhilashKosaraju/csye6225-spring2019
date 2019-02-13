@@ -14,13 +14,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 public class NotesController {
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private NotesRepository notesRepository;
@@ -29,11 +26,12 @@ public class NotesController {
     private NotesService notesService;
 
     @GetMapping("/note")
-    public String getNotes(Principal principal) throws AppException {
-        List<Notes> notesList = notesService.getUserNotes(principal);
-        JsonObject entity = new JsonObject();
-        entity.addProperty("Notes", notesList.toString());
-        return entity.toString();
+    public List<Notes> getNotes(Authentication auth) throws AppException {
+        List<Notes> notesList = notesService.getUserNotes(auth.getName());
+        //JsonObject entity = new JsonObject();
+        //entity.addProperty("Notes", notesList.toString());
+        //return entity.toString();
+        return notesList;
     }
 
     @PostMapping(value= "/note")
@@ -45,10 +43,11 @@ public class NotesController {
             if(nt != null) {
                 JsonObject entity = new JsonObject();
                 entity.addProperty("Success", "Note created");
+                entity.addProperty("NoteID", nt.getNote_id().toString());
                 return ResponseEntity.ok().body(entity.toString());
             }else{
                 JsonObject entity = new JsonObject();
-                entity.addProperty("Error","A note with same title already exists. Please create another or update old one.");
+                entity.addProperty("Error","A note with same title already exists for this user. Please create another or update old one.");
                 return ResponseEntity.badRequest().body(entity.toString());
             }
         }else {
@@ -60,39 +59,79 @@ public class NotesController {
     }
 
     @GetMapping("/note/{id}")
-    public Notes getNote( @PathVariable final UUID id){
-        Notes note = notesService.findNotesById(id);
+    public ResponseEntity<Object> getNote(@PathVariable final String id,Authentication auth){
+        UUID uuid = UUID.fromString(id);
+        Notes note = notesService.findNotesById(uuid);
         if(note != null)
-           return note;
-        else
-            return new Notes();
+            if(auth.getName().equalsIgnoreCase(note.getUser_id())) {
+                return ResponseEntity.ok().body(note.toString());
+            }else{
+                JsonObject entity = new JsonObject();
+                entity.addProperty("Error", "Access denied.");
+                return ResponseEntity.status(401).body(entity.toString());
+            }
+        else {
+            JsonObject entity = new JsonObject();
+            entity.addProperty("Error", "Note not found");
+            return ResponseEntity.ok().body(entity.toString());
+        }
     }
 
     @PutMapping("/note/{noteId}")
-    public ResponseEntity<Object> updateUser(@RequestBody Notes note,@PathVariable  final UUID noteId){
-        Notes userNotes = notesService.findNotesById(noteId);
-        if (userNotes!=null){
-            notesService.updateNotes(note,noteId);
+    public ResponseEntity<Object> updateNote(@RequestBody Notes note,@PathVariable final String noteId, Authentication auth){
+        UUID uuid = UUID.fromString(noteId);
+        Notes userNotes = notesService.findNotesById(uuid);
+        Notes updated = null;
+        if (userNotes == null) {
             JsonObject entity = new JsonObject();
-            entity.addProperty("Success","Note has been updated.");
-            return ResponseEntity.badRequest().body(entity.toString());
+            entity.addProperty("Error", "Note not found");
+            return ResponseEntity.ok().body(entity.toString());
         }
-        else{
-            System.out.println("This is the error");
+
+        if(auth.getName().equalsIgnoreCase(userNotes.getUser_id())) {
+            userNotes.setTitle(note.getTitle());
+            userNotes.setContent(note.getContent());
+            userNotes.setCreated_ts(userNotes.getCreated_ts());
+            userNotes.setUpdates_ts(new Date().toString());
+            updated = notesRepository.save(userNotes);
+
+            if(updated != null) {
+                JsonObject entity = new JsonObject();
+                entity.addProperty("Success", "Note has been updated.");
+                return ResponseEntity.ok().body(entity.toString());
+            }else{
+                JsonObject entity = new JsonObject();
+                entity.addProperty("Error", "error updating the note. Look at logs for details");
+                return ResponseEntity.badRequest().body(entity.toString());
+            }
+        }else{
             JsonObject entity = new JsonObject();
-            entity.addProperty("Error","Please send the necessary parameters to store note.");
-            return ResponseEntity.badRequest().body(entity.toString());
+            entity.addProperty("Error", "Access denied.");
+            return ResponseEntity.status(401).body(entity.toString());
         }
     }
 
     @DeleteMapping("/note/{id}")
-    public ResponseEntity<Object> deleteNote( @PathVariable final UUID id){
-
-        Notes note = notesService.findNotesById(id);
-        notesRepository.delete(note);
-        JsonObject entity = new JsonObject();
-        entity.addProperty("Error","Please send the necessary parameters to store note.");
-        return ResponseEntity.badRequest().body(entity.toString());
+    public ResponseEntity<Object> deleteNote( @PathVariable final String id, Authentication auth){
+        UUID uuid = UUID.fromString(id);
+        Notes note = notesService.findNotesById(uuid);
+        if(note != null) {
+            if (auth.getName().equalsIgnoreCase(note.getUser_id())) {
+                notesRepository.deleteById(uuid);
+                JsonObject entity = new JsonObject();
+                entity.addProperty("Success", "Deleted the note.");
+                return ResponseEntity.ok().body(entity.toString());
+            } else {
+                JsonObject entity = new JsonObject();
+                entity.addProperty("Error", "Access denied.");
+                return ResponseEntity.status(401).body(entity.toString());
+            }
+        }else{
+            notesRepository.delete(note);
+            JsonObject entity = new JsonObject();
+            entity.addProperty("Error", "Note not found. Please enter correct note id.");
+            return ResponseEntity.ok().body(entity.toString());
+        }
     }
 
 }

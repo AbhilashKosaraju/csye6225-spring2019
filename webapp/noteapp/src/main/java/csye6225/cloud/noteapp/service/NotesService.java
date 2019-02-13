@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 public class NotesService {
@@ -34,7 +31,7 @@ public class NotesService {
         try {
             List<Notes> notesList  = getAllNotes();
             for (Notes n : notesList) {
-                if (n.getTitle().equals(title)) {
+                if (n.getTitle().equalsIgnoreCase(title) && n.getUser_id().equalsIgnoreCase(name)) {
                     return null;
                 }
             }
@@ -65,30 +62,14 @@ public class NotesService {
             }
         }
         return notes;
-
     }
 
-    public void updateNotes(Notes not, UUID id){
-        Iterable<Notes> notesList = noteRepository.findAll();
-        for(Notes note : notesList){
-            if(note.getNote_id().equals(id)){
-                note.setTitle(not.getTitle());
-//                note.setNote_id(not.getNote_id());
-                note.setContent(not.getContent());
-                note.setCreated_ts(not.getCreated_ts());
-                note.setUpdates_ts(not.getUpdates_ts());
-                noteRepository.save(note);
-                return;
-            }
-        }
-    }
-
-    public List<Notes> getUserNotes(Principal principal) throws AppException{
+    public List<Notes> getUserNotes(String user) throws AppException{
         try{
-            Iterable<Notes> notesList = noteRepository.findAll();
+            List<Notes> notesList = getAllNotes();
             List<Notes> userNotes = new ArrayList<Notes>();
             for(Notes note : notesList) {
-                if (note.getUser_id().equals(principal.getName()))
+                if (note.getUser_id().equalsIgnoreCase(user))
                     userNotes.add(note);
             }
             return userNotes;

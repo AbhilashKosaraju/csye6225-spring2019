@@ -10,6 +10,7 @@ import csye6225.cloud.noteapp.service.NotesService;
 import csye6225.cloud.noteapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -30,23 +31,22 @@ public class NotesController {
     private NotesService notesService;
 
     @GetMapping("/note")
-    public String getNotes() throws AppException {
+    public String getNotes(Authentication auth) throws AppException {
         List<Notes> notesList = notesService.getAllNotes();
         JsonObject entity = new JsonObject();
-        //entity.addProperty("User ID", udService.user);
         entity.addProperty("Notes", notesList.toString());
         return entity.toString();
     }
 
     @PostMapping(value= "/note")
-    public ResponseEntity<Object> createNote(@Valid @RequestBody Notes note) throws AppException {
+    public ResponseEntity<Object> createNote(@Valid @RequestBody Notes note,Authentication auth) throws AppException {
         String title = note.getTitle();
         String content = note.getContent();
         if(title != null && content != null) {
-            Notes nt = notesService.createNote(title,content);
+            Notes nt = notesService.createNote(title,content,auth.getName());
             if(nt != null) {
                 JsonObject entity = new JsonObject();
-                //entity.addProperty("Success", "Note created for " + udService.user);
+                entity.addProperty("Success", "Note created");
                 return ResponseEntity.ok().body(entity.toString());
             }else{
                 JsonObject entity = new JsonObject();

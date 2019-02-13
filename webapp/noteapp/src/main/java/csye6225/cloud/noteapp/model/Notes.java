@@ -1,6 +1,8 @@
 package csye6225.cloud.noteapp.model;
 
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 import java.util.UUID;
 
@@ -25,6 +27,7 @@ public class Notes {
 
     @Column(name="updated_ts")
     private String updates_ts;
+
 
     public String getTitle() {
         return title;
@@ -77,8 +80,8 @@ public class Notes {
     @Override
     public String toString() {
         return "Notes{" +
-                "noteId=" + note_id +
-                ", notes='" + content + '\'' +
+                "noteId=" + note_id + " "+ "nodeTitle=" + title + " " + "userId=" + user_id +
+                " notes= " + content + '\'' +
                 '}';
     }
 }

@@ -5,6 +5,6 @@ import csye6225.cloud.noteapp.model.Notes;
 
 import java.util.UUID;
 
-public interface NotesRepository extends JpaRepository<Notes, UUID> {
+public interface NotesRepository extends JpaRepository<Notes, String> {
     //Optional<Notes> findNotesByNote_id(String note_id);
 }

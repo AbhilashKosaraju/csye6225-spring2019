@@ -60,8 +60,8 @@ public class NotesController {
 
     @GetMapping("/note/{id}")
     public ResponseEntity<Object> getNote(@PathVariable final String id,Authentication auth){
-        UUID uuid = UUID.fromString(id);
-        Notes note = notesService.findNotesById(uuid);
+        //UUID uuid = UUID.fromString(id);
+        Notes note = notesService.findNotesById(id);
         if(note != null)
             if(auth.getName().equalsIgnoreCase(note.getUser_id())) {
                 return ResponseEntity.ok().body(note.toString());
@@ -79,8 +79,8 @@ public class NotesController {
 
     @PutMapping("/note/{noteId}")
     public ResponseEntity<Object> updateNote(@RequestBody Notes note,@PathVariable final String noteId, Authentication auth){
-        UUID uuid = UUID.fromString(noteId);
-        Notes userNotes = notesService.findNotesById(uuid);
+        //UUID uuid = UUID.fromString(noteId);
+        Notes userNotes = notesService.findNotesById(noteId);
         Notes updated = null;
         if (userNotes == null) {
             JsonObject entity = new JsonObject();
@@ -113,11 +113,11 @@ public class NotesController {
 
     @DeleteMapping("/note/{id}")
     public ResponseEntity<Object> deleteNote( @PathVariable final String id, Authentication auth){
-        UUID uuid = UUID.fromString(id);
-        Notes note = notesService.findNotesById(uuid);
+        //UUID uuid = UUID.fromString(id);
+        Notes note = notesService.findNotesById(id);
         if(note != null) {
             if (auth.getName().equalsIgnoreCase(note.getUser_id())) {
-                notesRepository.deleteById(uuid);
+                notesRepository.deleteById(id);
                 JsonObject entity = new JsonObject();
                 entity.addProperty("Success", "Deleted the note.");
                 return ResponseEntity.ok().body(entity.toString());

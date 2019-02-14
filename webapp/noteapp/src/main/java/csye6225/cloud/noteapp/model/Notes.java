@@ -11,8 +11,8 @@ import java.util.UUID;
 @Table(name = "notes")
 public class Notes {
     @Id
-    @Column(name = "uuid", unique = true)
-    private UUID note_id;
+    @Column(name = "note_id", unique = true)
+    private String note_id;
 
     @Column(name="title")
     private String title;
@@ -46,15 +46,15 @@ public class Notes {
         this.content = content;
     }
 
-    public UUID getNote_id() {
-        return note_id;
-    }
-
     public String getUser_id() {
         return user_id;
     }
 
-    public void setNote_id(UUID note_id) {
+    public String getNote_id() {
+        return note_id;
+    }
+
+    public void setNote_id(String note_id) {
         this.note_id = note_id;
     }
 

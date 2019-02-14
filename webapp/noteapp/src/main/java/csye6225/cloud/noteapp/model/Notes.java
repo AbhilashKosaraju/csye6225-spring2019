@@ -84,7 +84,7 @@ public class Notes {
     @Override
     public String toString() {
         JsonObject entity = new JsonObject();
-        entity.addProperty("noteId",this.note_id.toString());
+        entity.addProperty("noteId",this.note_id);
         entity.addProperty("title",this.title);
         entity.addProperty("content",this.content);
         entity.addProperty("created_ts",this.created_ts);

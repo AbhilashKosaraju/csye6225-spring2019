@@ -37,7 +37,7 @@ public class NotesService {
             }
             Notes newnote = new Notes();
             UUID uuid = UUID.randomUUID();
-            newnote.setNote_id(uuid);
+            newnote.setNote_id(uuid.toString());
             newnote.setTitle(title);
             newnote.setContent(content);
             newnote.setCreated_ts(new Date().toString());
@@ -53,11 +53,11 @@ public class NotesService {
     }
 
 
-    public Notes findNotesById(UUID noteId){
+    public Notes findNotesById(String noteId){
         Iterable<Notes> notesList = noteRepository.findAll();
         Notes notes = null;
         for(Notes note : notesList){
-            if(note.getNote_id().equals(noteId)){
+            if(note.getNote_id().equalsIgnoreCase(noteId)){
                 notes = note;
             }
         }

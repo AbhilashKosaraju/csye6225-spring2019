@@ -29,6 +29,9 @@ public class Notes {
     @Column(name="updated_ts")
     private String updates_ts;
 
+    public Notes(){
+        
+    }
 
     public String getTitle() {
         return title;

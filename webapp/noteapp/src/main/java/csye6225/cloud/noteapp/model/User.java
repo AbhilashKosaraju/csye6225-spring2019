@@ -1,5 +1,6 @@
 package csye6225.cloud.noteapp.model;
 
+import com.google.gson.JsonObject;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -23,6 +24,11 @@ public class User {
         this.password = password;
     }
 
+    public User(User user) {
+        this.email = user.getEmail();
+        this.password = user.getPassword();
+    }
+
     public String getEmail() {
         return email;
     }
@@ -38,4 +44,13 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+
+    @Override
+    public String toString() {
+        com.google.gson.JsonObject entity = new JsonObject();
+        entity.addProperty("email",this.email.toString());
+        entity.addProperty("password",this.password);
+        return entity.toString();
+        }
 }

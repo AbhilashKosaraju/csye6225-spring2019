@@ -8,7 +8,7 @@ public class AppException extends Exception{
 
     public AppException(String errMessage) {
         super(errMessage);
-        this.status = 500;
+        this.status = 501;
     }
 
     public AppException(int status, String errMessage) {

@@ -2,24 +2,54 @@ package csye6225.cloud.noteapp.service;
 
 import csye6225.cloud.noteapp.exception.AppException;
 import csye6225.cloud.noteapp.repository.UserRepository;
-import org.apache.tomcat.util.codec.binary.Base64;
 import csye6225.cloud.noteapp.model.User;
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Component
-public class UserService {
+@Service
+public class UserService implements UserDetailsService {
 
+    private static int salt = 10;
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = findUserByEmail(username);
+        if(user == null){
+            throw new UsernameNotFoundException(username + " not found");
+        }
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        return  new org.springframework.security.core.userdetails.User(
+                user.getEmail(),
+                user.getPassword(),
+                authorities
+        );
+    }
+
+    public User findUserByEmail(String email){
+        Iterable<User> list = userRepository.findAll();
+        for(User u : list){
+            if(u.getEmail().equalsIgnoreCase(email)){
+                return u;
+            }
+        }
+        return null;
+    }
 
     public List<User> getAllUsers() throws AppException {
         try {
@@ -44,7 +74,7 @@ public class UserService {
             }
             User newuser = new User();
             newuser.setEmail(user.getEmail());
-            newuser.setPassword(passwordEncoder.encode(user.getPassword()));
+            newuser.setPassword(user.getPassword());
 
             System.out.println(newuser.getPassword());
 
@@ -55,5 +85,6 @@ public class UserService {
             throw new AppException("Error creating person");
         }
     }
+
 
 }

@@ -21,7 +21,7 @@ import java.util.UUID;
 @Component
 public class AttachmentService {
 
-    private static String local_storage = "/home/keyur/Documents/temp";
+    private static String local_storage = "/home/abhi/Documents/temp";
 
     @Autowired
     private AttachmentRepository ar;

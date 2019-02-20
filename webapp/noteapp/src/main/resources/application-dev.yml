@@ -1,0 +1,4 @@
+spring:
+  message: Hello AWS
+server:
+  port: 9091

@@ -27,7 +27,7 @@ Adding attachements to the created notes has been enabled.
 Different profiles to run the application on local memory and on AWS S3 bucket has been established.
 
 Infrastructure as Code:
-A new cloud formation template in json format has been used to setup application resouces.
+A new cloud formation template in json format has been used to setup application resources.
 A shell script has been employed to create and configure required application resources using AWS CloudFormation.
 A shell script to delete the application CloudFormation stack has been created.
 The application stack includes, EC2 instance, DynamoDB Table, S3 Bucket and RDS Instance with the specified configurations to support the REST API deployment. 

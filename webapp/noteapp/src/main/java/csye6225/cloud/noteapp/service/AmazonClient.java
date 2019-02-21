@@ -16,23 +16,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.UUID;
+import com.mysql.cj.jdbc.Driver;
+//import org.postgresql.Driver;
 
-@Component
+@Service
 public class AmazonClient {
 
     private AmazonS3 s3client;
 
-    @Autowired
-    private Environment environment;
-
-    @Value("${amazonProperties.endpointUrl}")
+    @Value("${amazonProperties.endpoint}")
     private String endpointUrl;
     @Value("${amazonProperties.bucketName}")
     private String bucketName;
@@ -90,4 +93,28 @@ public class AmazonClient {
         return "Successfully deleted";
     }
 
+    public static Connection getRemoteConnection() {
+        if (System.getenv("RDS_HOSTNAME") != null) {
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                //Class.forName("org.postgresql.Driver");
+                String dbName = System.getenv("RDS_DB_NAME");
+                String userName = System.getenv("RDS_USERNAME");
+                String password = System.getenv("RDS_PASSWORD");
+                String hostname = System.getenv("RDS_HOSTNAME");
+                String port = System.getenv("RDS_PORT");
+                String jdbcUrl = "jdbc:mysql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password=" + password;
+                //String jdbcUrl = "jdbc:postgresql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password=" + password;
+                //logger.trace("Getting remote connection with connection string from environment variables.");
+                Connection con = DriverManager.getConnection(jdbcUrl);
+                //logger.info("Remote connection successful.");
+                return con;
+            }
+            catch (ClassNotFoundException e) { //logger.warn(e.toString());
+                 }
+            catch (SQLException e) { //logger.warn(e.toString());
+            }
+        }
+        return null;
+    }
 }

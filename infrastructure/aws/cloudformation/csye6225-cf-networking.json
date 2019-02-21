@@ -27,9 +27,8 @@
          "Type" : "AWS::EC2::VPC",
          "Properties" : {
             "CidrBlock" : { "Ref" : "vpc" },
-    	    "EnableDnsSupport" : "false",
-    	    "EnableDnsHostnames" : "false",
-            "InstanceTenancy" : "dedicated",
+    	    "EnableDnsSupport" : "true",
+    	    "EnableDnsHostnames" : "true",
             "Tags" : [
                {
                   "Key" : "Name",

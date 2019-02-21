@@ -1,0 +1,11 @@
+spring:
+  profile: dev
+
+server:
+  port: 9091
+
+amazonProperties:
+  endpointUrl: https://s3.us-east-1.amazonaws.com
+  accessKey: AKIAILZH2R3O3CPCNP5A
+  secretKey: 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
+  bucketName: csye6225-spring2019-dongak.me.csye6225.com

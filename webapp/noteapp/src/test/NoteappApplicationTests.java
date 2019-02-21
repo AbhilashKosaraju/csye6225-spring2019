@@ -24,7 +24,7 @@ public class NoteappApplicationTests {
     @Test
     public void testForAuth() {
         RestAssured.baseURI = "http://localhost:8080";
-        given().auth().preemptive().basic("lastking@yahoo.com", "$2a$10$UaHgPFVxGLY9pcaRAb1JpOkAWV.AAoVkG80dp.s1gFRorT46K/23G")
+        given().auth().preemptive().basic("kosaraju_uuu@rediffmail.com", "Kosaraju@1234")
                 .when()
                 .get("/")
                 .then()
@@ -35,7 +35,7 @@ public class NoteappApplicationTests {
     @Test
     public void testForUnAuth() {
         RestAssured.baseURI = "http://localhost:8080";
-        given().auth().preemptive().basic("lastking@yahoo.com", "$2a$10$UaHgPFVxGLY9pcaRAb1JpOkAWV.AAoVkG80dp.s1gFRo46K/23G")
+        given().auth().preemptive().basic("kosaraju_uuu@rediffmail.com", "Kosaraju@123")
                 .when()
                 .get("/")
                 .then()

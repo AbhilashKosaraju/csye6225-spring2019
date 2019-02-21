@@ -1,10 +1,15 @@
 package csye6225.cloud.noteapp.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.JsonObject;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
+import org.hibernate.mapping.List;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.UUID;
 
 @Entity
@@ -20,6 +25,7 @@ public class Notes {
     @Column(name="content")
     private String content;
 
+    @JsonIgnore
     @Column(name="user_id")
     private String user_id;
 
@@ -28,6 +34,10 @@ public class Notes {
 
     @Column(name="updated_ts")
     private String updates_ts;
+
+    @Column(name="attachments")
+    @OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
+    private Collection<Attachment> attachments = new ArrayList<>();
 
     public Notes(){
         
@@ -81,7 +91,15 @@ public class Notes {
         this.updates_ts = updates_ts;
     }
 
-    @Override
+    public Collection<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(Collection<Attachment> attachments) {
+        this.attachments = attachments;
+    }
+
+    /*@Override
     public String toString() {
         JsonObject entity = new JsonObject();
         entity.addProperty("noteId",this.note_id);
@@ -90,5 +108,5 @@ public class Notes {
         entity.addProperty("created_ts",this.created_ts);
         entity.addProperty("updated_ts",this.updates_ts);
         return entity.toString();
-    }
+    }*/
 }

@@ -18,17 +18,17 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Date;
 import java.util.UUID;
 
 @RestController
 public class AttachmentController {
 
-    private AmazonClient amazonClient;
-
     @Autowired
-    public AttachmentController(AmazonClient amazonClient) {
-        this.amazonClient = amazonClient;
-    }
+    private AmazonClient amazonClient;
 
     @Autowired
     private Environment environment;
@@ -49,7 +49,7 @@ public class AttachmentController {
     private String profile;
 
     @PostMapping("/note/{noteid}/attachment")
-    public ResponseEntity<Object> addAttachments(@RequestParam("file") MultipartFile file, Authentication auth, @PathVariable final String noteid) throws AppException {
+    public ResponseEntity<Object> addAttachments(@RequestParam("file") MultipartFile file, Authentication auth, @PathVariable final String noteid) throws AppException, SQLException {
 
         if (file.isEmpty()) {
             JsonObject entity = new JsonObject();
@@ -65,7 +65,18 @@ public class AttachmentController {
             return ResponseEntity.badRequest().body(entity.toString());
         }
         if(profile.equalsIgnoreCase("dev")) {
+
             UUID uuid= UUID.randomUUID();
+            Connection conn = amazonClient.getRemoteConnection();
+            Statement setupStatement = conn.createStatement();
+            String createTable = "CREATE TABLE IF NOT EXISTS attachmentdata ( attachmentid varchar(100) NOT NULL, file_size varchar (50), PRIMARY KEY(attachmentid));";
+            String insertRow1 = "INSERT INTO attachmentdata (attachmentid,file_size) VALUES ('"+ uuid.toString() +"','"+ file.getSize() +"');";
+
+            setupStatement.addBatch(createTable);
+            setupStatement.addBatch(insertRow1);
+            setupStatement.executeBatch();
+            setupStatement.close();
+
             attach = amazonClient.uploadFile(file,uuid.toString());
             Attachment att = new Attachment();
             att.setPath(attach);
@@ -85,7 +96,7 @@ public class AttachmentController {
     }
 
     @PutMapping("/note/{noteid}/attachment/{attachmentid}")
-    public ResponseEntity<Object> updateAttachments(@RequestParam("file") MultipartFile file, Authentication auth, @PathVariable final String noteid, @PathVariable final String attachmentid) throws AppException {
+    public ResponseEntity<Object> updateAttachments(@RequestParam("file") MultipartFile file, Authentication auth, @PathVariable final String noteid, @PathVariable final String attachmentid) throws AppException, SQLException {
 
         if (file.isEmpty()) {
             JsonObject entity = new JsonObject();
@@ -99,7 +110,22 @@ public class AttachmentController {
             return ResponseEntity.badRequest().body(entity.toString());
         }
         if(auth.getName().equalsIgnoreCase(note.getUser_id())){
-            String status = as.updateAttachment(file,note,attachmentid);
+            String status = null;
+            if(profile.equalsIgnoreCase("dev")) {
+                amazonClient.deleteFileFromS3Bucket(ar.getOne(attachmentid).getPath());
+                status = as.updateCloudAttachment(file, note, attachmentid);
+
+                Connection con = amazonClient.getRemoteConnection();
+                Statement setupStatement = con.createStatement();
+                String insertRow1 = "UPDATE attachmentdata SET file_size='"+ file.getSize() +"' WHERE attachmentid='"+ attachmentid +"';";
+
+                setupStatement.addBatch(insertRow1);
+                setupStatement.executeBatch();
+                setupStatement.close();
+
+            }else {
+                status = as.updateAttachment(file, note, attachmentid);
+            }
             if(status == null){
                 JsonObject entity = new JsonObject();
                 entity.addProperty("Error", "Attachment not found. Please enter a valid attachment ID");
@@ -117,7 +143,7 @@ public class AttachmentController {
     }
 
     @DeleteMapping("/note/{noteid}/attachment/{attachmentid}")
-    public ResponseEntity<Object> deleteAttachments(Authentication auth, @PathVariable final String noteid, @PathVariable final String attachmentid) throws AppException {
+    public ResponseEntity<Object> deleteAttachments(Authentication auth, @PathVariable final String noteid, @PathVariable final String attachmentid) throws AppException, SQLException {
 
         if (noteid == null || attachmentid == null) {
             JsonObject entity = new JsonObject();
@@ -133,6 +159,13 @@ public class AttachmentController {
         if (auth.getName().equalsIgnoreCase(note.getUser_id())) {
             if(profile.equalsIgnoreCase("dev")) {
                 amazonClient.deleteFileFromS3Bucket(ar.getOne(attachmentid).getPath());
+
+                Connection con = amazonClient.getRemoteConnection();
+                Statement setupStatement = con.createStatement();
+                String insertRow1 = "DELETE FROM attachmentdata WHERE attachmentid='"+ attachmentid +"';";
+                setupStatement.addBatch(insertRow1);
+                setupStatement.executeBatch();
+                setupStatement.close();
             }
             int present = as.deleteAttachment(note, attachmentid);
             if (present != 1) {

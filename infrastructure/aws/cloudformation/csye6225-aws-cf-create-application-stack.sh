@@ -29,13 +29,21 @@ then
 fi
 echo "$keyName"
 
-echo "Please enter the ImageID of centos AMI  created"
-read imageid
-if [ -z "$imageid" ]
+#echo "Please enter the ImageID of centos AMI  created"
+#read imageid
+echo "Your latest AMI ID is:"
+imageid=$(aws ec2 describe-images --filters "Name=name,Values=csye6225*" --query "sort_by(Images, &CreationDate)[-1].[ImageId]" --output "text")
+if [ $? -eq 0 ]
 then
-	echo "ImageID error \n Exiting"
-	exit 1
+        echo "$imageid"
+else
+        echo "AMI Id retrival Failed"
+        exit 0
 fi
+
+
+
+
 
 VpcId=$(aws ec2 describe-vpcs --query 'Vpcs[].{VpcId:VpcId}' \
 --filters "Name=tag:Name,Values=$networkStackName-csye6225-vpc" "Name=is-default, Values=false" --output text 2>&1)

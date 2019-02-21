@@ -2,17 +2,23 @@ package csye6225.cloud.noteapp.controller;
 
 import com.google.gson.JsonObject;
 import csye6225.cloud.noteapp.exception.AppException;
+import csye6225.cloud.noteapp.model.Attachment;
 import csye6225.cloud.noteapp.model.Notes;
+import csye6225.cloud.noteapp.repository.AttachmentRepository;
 import csye6225.cloud.noteapp.repository.NotesRepository;
 import csye6225.cloud.noteapp.repository.UserRepository;
+import csye6225.cloud.noteapp.service.AmazonClient;
+import csye6225.cloud.noteapp.service.AttachmentService;
 import csye6225.cloud.noteapp.service.NotesService;
 import csye6225.cloud.noteapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.File;
 import java.security.Principal;
 import java.util.*;
 
@@ -20,10 +26,22 @@ import java.util.*;
 public class NotesController {
 
     @Autowired
+    private AmazonClient amazonClient;
+
+    @Autowired
     private NotesRepository notesRepository;
 
     @Autowired
     private NotesService notesService;
+
+    @Autowired
+    private AttachmentRepository ar;
+
+    @Autowired
+    private AttachmentService as;
+
+    @Value("${spring.profile}")
+    private String profile;
 
     @GetMapping("/note")
     public List<Notes> getNotes(Authentication auth) throws AppException {
@@ -60,7 +78,7 @@ public class NotesController {
         Notes note = notesService.findNotesById(id);
         if(note != null)
             if(auth.getName().equalsIgnoreCase(note.getUser_id())) {
-                return ResponseEntity.ok().body(note.toString());
+                return ResponseEntity.ok().body(note);
             }else{
                 JsonObject entity = new JsonObject();
                 entity.addProperty("Error", "Access denied.");
@@ -117,6 +135,17 @@ public class NotesController {
         Notes note = notesService.findNotesById(id);
         if(note != null) {
             if (auth.getName().equalsIgnoreCase(note.getUser_id())) {
+                Collection<Attachment> lista = note.getAttachments();
+                for (Attachment a: lista ) {
+                    if(profile.equalsIgnoreCase("dev")) {
+                        amazonClient.deleteFileFromS3Bucket(a.getPath());
+                    }else{
+                        File oldfile = new File(a.getPath());
+                        if (oldfile.exists()) {
+                            oldfile.delete();
+                        }
+                    }
+                }
                 notesRepository.deleteById(id);
                 JsonObject entity = new JsonObject();
                 entity.addProperty("Success", "Deleted the note.");

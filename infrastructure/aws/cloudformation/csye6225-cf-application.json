@@ -47,7 +47,6 @@
         "ImageId": {
             "Ref": "ImageID"
           },
-#"AvailabilityZone": "us-east-1a",
         "InstanceType": "t2.micro",
         "KeyName": {
             "Ref": "KeyName"
@@ -61,7 +60,16 @@
             "Ref": "WebServerSecurityGroup"
           }
         ],
-        
+ "BlockDeviceMappings":[
+               {
+                 "DeviceName":"/dev/sda1",
+                  "Ebs":{
+                     "VolumeType":"gp2",
+                     "DeleteOnTermination":"true",
+                     "VolumeSize":"20"
+                  }
+               }
+            ],       
         
         "Tags": [
           {
@@ -117,7 +125,7 @@
     },
     "DBServerSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
-"Condition": "Is-EC2-VPC",
+     "Condition": "Is-EC2-VPC",
       "Properties": {
         "GroupName": "csye6225-rds",
         "GroupDescription": "Allow TCP traffic on port 3306 for MySQL",

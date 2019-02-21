@@ -24,7 +24,10 @@ import java.util.UUID;
 @Component
 public class AttachmentService {
 
-    private static String local_storage = "/home/abhi/Documents/temp";
+    private static String local_storage = "/home/keyur/Documents/temp";
+
+    @Autowired
+    private AmazonClient amazonClient;
 
     @Autowired
     private AttachmentRepository ar;
@@ -44,7 +47,7 @@ public class AttachmentService {
             if (nt != null && nt.getUser_id().equalsIgnoreCase(name)) {
                 Attachment attachment = new Attachment();
                 UUID uuid = UUID.randomUUID();
-
+                String abc = System.getenv("AWS_ACCESS_KEY_ID");
                 String mimeType = file.getContentType();
                 String type = mimeType.split("/")[1];
 
@@ -88,6 +91,19 @@ public class AttachmentService {
         catch (IOException exc){
             throw new AppException("IOException");
         }
+    }
+
+    public String updateCloudAttachment(MultipartFile file, Notes note, String attachmentid){
+        for (Attachment a:note.getAttachments()) {
+            if(a.getAttachment_id().equalsIgnoreCase(attachmentid)) {
+
+                String attach = amazonClient.uploadFile(file,a.getAttachment_id());
+                a.setPath(attach);
+                noteRepository.save(note);
+                return "Success";
+            }
+        }
+        return null;
     }
 
     public int deleteAttachment(Notes note, String attachmentid) {

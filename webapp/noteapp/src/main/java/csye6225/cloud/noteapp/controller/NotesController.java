@@ -108,12 +108,13 @@ public class NotesController {
 
     @DeleteMapping("/note/{id}")
     public ResponseEntity<Object> deleteNote( @PathVariable final String id, Authentication auth){
-        Notes note = notesService.findNotesById(id);
+
         if(id == null){
             JsonObject entity = new JsonObject();
             entity.addProperty("Error", "Please enter a valid note id");
             return ResponseEntity.badRequest().body(entity.toString());
         }
+        Notes note = notesService.findNotesById(id);
         if(note != null) {
             if (auth.getName().equalsIgnoreCase(note.getUser_id())) {
                 notesRepository.deleteById(id);

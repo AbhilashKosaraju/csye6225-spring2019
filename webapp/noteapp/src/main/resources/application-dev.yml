@@ -1,9 +1,9 @@
 spring:
   profile: dev
   datasource:
-    url: jdbc:mysql://csye6225.cnewmoox6eb2.us-east-1.rds.amazonaws.com:3306/csye6225
-    password: root-ubuntu
-    username: root
+    url:
+    password:
+    username:
     testWhileIdle: true
     validationQuery: SELECT 1
   jpa:
@@ -25,5 +25,5 @@ server:
   port: 9091
 
 amazonProperties:
-  endpoint: https://s3.us-east-1.amazonaws.com
-  bucketName: csye6225-spring2019-dongak.me.csye6225.com
+  endpoint:
+  bucketName:

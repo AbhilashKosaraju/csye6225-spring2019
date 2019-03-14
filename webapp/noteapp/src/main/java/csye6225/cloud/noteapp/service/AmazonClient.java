@@ -36,20 +36,11 @@ public class AmazonClient {
     private String endpointUrl;
     @Value("${amazonProperties.bucketName}")
     private String bucketName;
-    private String accessKey;
-    private String secretKey;
-
-    private AmazonClient(){
-        this.accessKey = System.getenv("ACCESS_KEY");
-        this.secretKey = System.getenv("SECRET_KEY");
-    }
 
     @PostConstruct
     private void initializeAmazon() {
-        AWSCredentials credentials = new BasicAWSCredentials(this.accessKey, this.secretKey);
         this.s3client = AmazonS3ClientBuilder.standard()
-                .withRegion(Regions.US_EAST_1)
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                .withCredentials(new InstanceProfileCredentialsProvider(false))
                 .build();
     }
 

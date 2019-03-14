@@ -1,108 +1,79 @@
-echo "Please enter Network Stack Name:"
-read networkStackName
-if [ -z "$networkStackName" ]
-then
-	echo "StackName error exiting!"
-	exit 1
-fi
-echo "$networkStackName"
+#!/bin/bash
+
+echo "Starting with Stack creation process......"
+echo "Validating the Template......"
+
+#key=$(</root/.ssh/aws_rsa.pub)
+#echo "$key"
+#exit 1
 
 
-
-echo "Please enter Application Stack Name:"
-read appStackName
-if [ -z "$appStackName" ]
-then
-	echo "StackName error exiting!"
-	exit 1
-fi
-echo "$appStackName"
-
-
-
-echo "Please enter an active keyPair to associate with EC2:"
-read keyName
-if [ -z "$keyName" ]
-then
-	echo "StackName error exiting!"
-	exit 1
-fi
-echo "$keyName"
-
-#echo "Please enter the ImageID of centos AMI  created"
-#read imageid
-echo "Your latest AMI ID is:"
-imageid=$(aws ec2 describe-images --filters "Name=name,Values=csye6225*" --query "sort_by(Images, &CreationDate)[-1].[ImageId]" --output "text")
 if [ $? -eq 0 ]
 then
-        echo "$imageid"
+    echo "Template validation successful"
+    echo "Fetching Ami Id now ......"
+    amiId=$(aws ec2 describe-images --filters "Name=name,Values=csye6225*" --query "sort_by(Images, &CreationDate)[-1].[ImageId]" --output "text")
+    if [ $? -eq 0 ]
+    then
+	echo "$amiId"
+    else
+	echo "AMI Id retrival Failed"
+	exit 0
+    fi
+    read -p "please enter the stackname used previously for vpc and its resources: " vpcStack
+    vpcId=$(aws ec2 describe-vpcs   --query 'Vpcs[*].{VpcId:VpcId}' --filters Name=tag:Name,Values=$vpcStack-csye6225-vpc Name=is-default,Values=false --output text  2>&1)
+    echo "VpcId : $vpcId"
+    #subnet1
+    nameExtension1="-csye6225-subnet1"
+    subnetName1=$vpcStack$nameExtension1
+    echo "Public Subnet name : $subnetName1"
+    Subnet1=$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=$subnetName1"  --query 'Subnets[*].SubnetId' --output text 2>&1)
+    echo "SubnetId1: $Subnet1"
+    #subnet2
+    nameExtension2="-csye6225-subnet3"
+    subnetName2=$vpcStack$nameExtension2
+    echo "Public Subnet name : $subnetName2"
+    Subnet2=$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=$subnetName2"  --query 'Subnets[*].SubnetId' --output text 2>&1)
+    echo "SubnetId2: $Subnet2"
+    #subnet3
+    nameExtension3="-csye6225-subnet4"
+    subnetName3=$vpcStack$nameExtension3
+    echo "Public Subnet name : $subnetName3"
+    Subnet3=$(aws ec2 describe-subnets --filters "Name=tag:Name,Values=$subnetName3"  --query 'Subnets[*].SubnetId' --output text 2>&1)
+    echo "SubnetId3: $Subnet3"
+
+    zone=$(aws route53 list-hosted-zones --query HostedZones[].{Name:Name} --output text | sed 's/.$//')
+    bucket="code-deploy.$zone"
+    echo "bucketName = $bucket"
+
+    read -p "please enter the Stackname: " stackname
+    echo "creating stack $stackname now ......"
+    #aws cloudformation create-stack --stack-name $stackname --template-body file://csye6225-cf-application.json --parameters ParameterKey=amiId,ParameterValue=$amiId ParameterKey=myVpc,ParameterValue=vpc-ae398bd4 ParameterKey=subnetId1,ParameterValue=subnet-4f107213 ParameterKey=subnetId2,ParameterValue=subnet-56187478 ParameterKey=subnetId3,ParameterValue=subnet-6c6e0f0b
+    aws cloudformation create-stack --stack-name $stackname --template-body file://csye6225-cf-application.json --parameters ParameterKey=amiId,ParameterValue=$amiId ParameterKey=myVpc,ParameterValue=$vpcId ParameterKey=subnetId1,ParameterValue=$Subnet1 ParameterKey=subnetId2,ParameterValue=$Subnet2 ParameterKey=subnetId3,ParameterValue=$Subnet3 ParameterKey=bucketName,ParameterValue=$bucket --capabilities CAPABILITY_NAMED_IAM
+    if [ $? -eq 0 ]
+    then
+        while true;
+        do
+            completionCheck=$(aws cloudformation describe-stacks --stack-name $stackname --query "Stacks[0].StackStatus")
+            if [ $completionCheck = "\"CREATE_COMPLETE\"" ]
+            then
+                break
+            else
+                echo -n "."
+            fi
+        done
+        echo "."
+        echo "stack $stackname created Successfully"
+    else
+        errorCheck=$(aws cloudformation describe-stacks --stack-name $stackname --query "Stacks[0].StackStatus")
+        if [ $errorCheck = "\"CREATE_COMPLETE\"" ]
+        then
+            echo "Stack: $stackname already exists"
+        else
+            echo "unable to create stack $stackname"
+        fi
+    fi
 else
-        echo "AMI Id retrival Failed"
-        exit 0
+    echo "Unable to validate template"
 fi
 
-
-
-
-
-VpcId=$(aws ec2 describe-vpcs --query 'Vpcs[].{VpcId:VpcId}' \
---filters "Name=tag:Name,Values=$networkStackName-csye6225-vpc" "Name=is-default, Values=false" --output text 2>&1)
-
-
-subnet=$(aws ec2 describe-subnets --filters Name=vpc-id,Values=${VpcId})
-subnetid1=$(echo -e "$subnet" | jq '.Subnets[0].SubnetId' | tr -d '"')
-subnetid2=$(echo -e "$subnet" | jq '.Subnets[1].SubnetId' | tr -d '"')
-subnetid3=$(echo -e "$subnet" | jq '.Subnets[2].SubnetId' | tr -d '"')
-
-
-
-if [ -z "$subnetid1" ]
-then
-	echo "Subnet ID 1 error \n Exiting"
-	exit 1
-fi
-
-
-if [ -z "$VpcId" ]
-then
-	echo "VPC ID error \n Exiting"
-	exit 1
-fi
-
-
-if [ -z "$subnetid2" ]
-then
-	echo "Subnet ID 2 error \n Exiting"
-	exit 1
-fi
-
-
-if [ -z "$subnetid3" ]
-then
-	echo "Subnet ID 3 error \n Exiting"
-	exit 1
-fi
-
-
-
-# Create CloudFormation Stack
-echo "Validating template"
-TMP_code=`aws cloudformation validate-template --template-body file://./csye6225-cf-application.json`
-if [ -z "$TMP_code" ]
-then
-	echo "Template error exiting!"
-	exit 1
-fi
-echo "Cloudformation template validation success"
-
-echo "Now Creating CloudFormation Stack"
-
-CRTSTACK_Code=`aws cloudformation create-stack --stack-name $appStackName --template-body file://./csye6225-cf-application.json --parameters ParameterKey=NetworkStackNameParameter,ParameterValue=$networkStackName ParameterKey=ApplicationStackNameParameter,ParameterValue=$appStackName ParameterKey=KeyName,ParameterValue=$keyName ParameterKey=VpcID,ParameterValue=$VpcId ParameterKey=PublicSubnetKey1,ParameterValue=$subnetid1 ParameterKey=PublicSubnetKey2,ParameterValue=$subnetid2 ParameterKey=PublicSubnetKey3,ParameterValue=$subnetid3 ParameterKey=ImageID,ParameterValue=$imageid`
-if [ -z "$CRTSTACK_Code" ]
-then
-	echo "Stack Creation error exiting!"
-	exit 1
-fi
-aws cloudformation wait stack-create-complete --stack-name $appStackName
-echo "Application Stack Created"
-echo "Check AWS Cloudformation"

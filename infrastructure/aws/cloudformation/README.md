@@ -1,19 +1,38 @@
-##Description: 
-csye6225-cf-networking.json file created to setup networking resources. 
-Parameters are given in the csye6225-aws-cf-networkparameters.json file.
-csye6225-aws-cf-networking-setup.sh file created to configure networking resources using AWS CloudFormation.
-Script will first validate the template then stack gets created, script will wait till stack gets created and finally prints stack creation sucess or failure message.
-csye6225-aws-cf-terminate-stack.sh file is created which will first find the stack and then delete the stack which the user wants to.
+# CSYE 6225 - Spring 2019
 
-##Resources created: 
-1) Virtual Private Cloud
-2) 3 subnets created 
-3) Internet gateway
-4) Router
-5) Route Tables
+## Cloud Formation
 
-To run script :-
+## Description
+This is the template to deploy amazon cloudformation. 
+This csye6225-cf-networking.json file is passed as a parameter to create stack.
+The csye6225-cf-parameteres.json contains list of variable parameters that can be updated by the user
 
-1) chmod 777 <script_name.sh> 
-2) ./<script_name.sh>
+
+## Command to create stack 
+`./csye6225-aws-cf-create-stack.json` 
+ or
+`bash csye6225-aws-cf-create-stack.json`
+
+Then follow the prompt, to enter stack name : 
+
+`Starting with Stack creation process......
+ Validating the Template......
+ Template validation successful
+ please enter the Stackname: vpc
+`
+
+## Command to terminate stack 
+`./csye6225-aws-cf-terminate-stack.json` 
+ or
+`bash csye6225-aws-cf-terminate-stack.json`
+
+
+Then follow the prompt, to enter stack name : 
+
+`Starting with Stack creation process......
+ Validating the Template......
+ Template validation successful
+ please enter the Stackname: vpc
+`
+
 

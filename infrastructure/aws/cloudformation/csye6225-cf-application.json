@@ -1,294 +1,368 @@
-
 {
-  "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Application Stack for CSYE 6225 - Spring 2019",
-  "Parameters": {
-    "NetworkStackNameParameter": {
-      "Description": "Network Stack Name",
-      "Type": "String"
+   "AWSTemplateFormatVersion" : "2010-09-09",
+   "Parameters" : {
+      "amiId" : {
+         "Description" : "Ami Id to launch ec2 instance",
+         "Type" : "String"
+      },
+      "myVpc"    : {
+       "Description"  : "Id for Vpc",
+       "Type"         : "String"
+      },
+      "subnetId1"    : {
+       "Description"  : "Id for subnet1",
+       "Type"         : "String"
+      },
+      "subnetId2"    : {
+       "Description"  : "Id for subnet2",
+       "Type"         : "String"
+      },
+      "subnetId3"    : {
+       "Description"  : "Id for subnet3",
+       "Type"         : "String"
+      },
+      "bucketName"    : {
+       "Description"  : "name of bucket where app is to be deployed",
+       "Type"         : "String"
+      }
+   },
+   "Conditions": {
+        "Is-EC2-VPC": {
+            "Fn::Equals": [
+                {
+                    "Ref": "AWS::Region"
+                },
+                "us-east-1"
+            ]
+        }
     },
-    "ApplicationStackNameParameter": {
-      "Description": "Application Stack Name",
-      "Type": "String"
-    },
-    "KeyName": {
-      "Description": "EC2 KeyPair to enable SSH access to the instance",
-      "Type": "AWS::EC2::KeyPair::KeyName"
-    },
-    "ImageID": {
-      
-      "Type": "String"
-    },
-    "PublicSubnetKey3": {
-      
-      "Type": "String"
-    },
-    "PublicSubnetKey2": {
-      
-      "Type": "String"
-    },
-    "PublicSubnetKey1": {
-      
-      "Type": "String"
-    },
-    "VpcID": {
-      
-      "Type": "String"
-    }
-  },
-"Conditions" : {
-        "Is-EC2-VPC"     : {"Fn::Equals" : [{"Ref" : "AWS::Region"}, "us-east-1" ]}
-        },
-
-  "Resources": {
-    "EC2Instance": {
-      "Type": "AWS::EC2::Instance",
-      "Properties": {
-        "ImageId": {
-            "Ref": "ImageID"
-          },
-        "InstanceType": "t2.micro",
-        "KeyName": {
-            "Ref": "KeyName"
-          },
-        
-        "SubnetId": {
-            "Ref": "PublicSubnetKey1"
-          },
-        "SecurityGroupIds": [
-          {
-            "Ref": "WebServerSecurityGroup"
-          }
-        ],
- "BlockDeviceMappings":[
+   "Resources" : {
+      "myImage" : {
+         "Type" : "AWS::EC2::Instance",
+         "Properties" : {
+            "ImageId" : { "Ref" : "amiId" },
+            "KeyName" : "keypair",
+            "InstanceType" : "t2.medium",
+            "BlockDeviceMappings" : [
                {
-                 "DeviceName":"/dev/sda1",
-                  "Ebs":{
-                     "VolumeType":"gp2",
-                     "DeleteOnTermination":"true",
-                     "VolumeSize":"20"
+                  "DeviceName" : "/dev/sda1",
+                  "Ebs" : {
+                        "VolumeSize" : 20,
+                        "VolumeType" : "gp2",
+                        "DeleteOnTermination": "true"
                   }
                }
-            ],       
-        
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Sub": "csye6225-EC2Instance"
-            }
-          },
-          {
-            "Key": "CodeDeployTag",
-            "Value": "Deploy"
-          }
-        ]
-      }
-    },
-    "WebServerSecurityGroup": {
-      "Type": "AWS::EC2::SecurityGroup",
+            ],
+            "UserData" : {
+               "Fn::Base64" : { 
+                  "Fn::Join" : [
+                     "\n",
+                     [
+                        "#!/bin/bash -xe",
+			"sudo service codedeploy-agent start",
+                        {
+                        "Fn::Join" : [
+                           "",
+                           [
+                           "sudo echo \"JAVA_OPTS=\\\"\\${JAVA_OPTS} -Dspring.datasource.username=csye6225master -Dspring.datasource.password=csye6225password -Dspring.bucketName=\"",
+                           {
+                              "Ref" : "bucketName"
+                           },
+                           "\" -Dspring.profiles.active=aws\\\"\">> /etc/default/tomcat8"
+                           ]
+                        ]
+                        },
+                        {
+                           "Fn::Join" : [
+                              "",
+                              [
+                                 "echo 'JAVA_OPTS=\"${JAVA_OPTS} -Dspring.datasource.url=\\\"jdpc:mysql://",
+                                 {
+                                    "Fn::GetAtt" : [
+                                       "myRDSInstance",
+				       "Endpoint.Address"	
+                                    ] 
+                                 },
+                                 ":3306/csye6625\\\"\"' >> /etc/default/tomcat8"
+                              ]
+                           ]
+                        }                        
+                     ]
+                  ]
+               }
+            },
+            "NetworkInterfaces": [
+                    {
+                        "AssociatePublicIpAddress": "true",
+                        "DeviceIndex": "0",
+                        "GroupSet" : [
+                           {
+                              "Ref" : "webappSecurityGroup"
+                           }
+                        ],
+                        "SubnetId": {
+                            "Ref": "subnetId1"
+                        }
+                    }
+                ],
+            "IamInstanceProfile" : {
+               "Ref" : "InstanceProfile"
+            }, 
+            "Tags" : [
+               {
+                  "Key" : "Name",
+                  "Value": {
+                     "Fn::Join": [
+                     "",
+                     [
+                        {
+                           "Ref": "AWS::StackName"
+                        },
+                        "-csye6225-Ec2Instance"
+                     ]
+                     ]
+                  }
+               }
+            ]
+         }
+      },
+      "codeDeployRole" : {
+         "Type" : "AWS::IAM::Role",
+         "Properties" : {
+            "AssumeRolePolicyDocument": {
+               "Version" : "2012-10-17",
+               "Statement" : [
+                  {
+                     "Effect" : "Allow",
+                     "Principal" : {
+                     "Service" : ["ec2.amazonaws.com"]
+                  },
+                     "Action" : [
+                     "sts:AssumeRole"
+                     ]
+                  }
+               ]
+            },
+            "RoleName" : "CodeDeployEc2ServiceRole",
+            "Path" : "/"
+         }
+      },
+      "InstanceProfile" : {
+         "Type" : "AWS::IAM::InstanceProfile",
+         "Properties" : {
+            "Path" : "/",
+            "Roles" : [
+               {
+                  "Ref" : "codeDeployRole"
+               }
+            ]
+         }
+      },
+      "codeDeployEc2S3" : {
+         "Type" : "AWS::IAM::ManagedPolicy",
+         "Properties" : {
+            "PolicyDocument" : {
+               "Version": "2012-10-17",
+               "Statement": [
+                  {
+                     "Effect": "Allow",
+                     "Action": [
+                        "s3:Get*",
+                        "s3:List*"
+                     ],
+                     "Resource":[{
+                     "Fn::Join": [
+                        "",
+                        [
+                           "arn:aws:s3:::",
+                           {
+                              "Ref": "bucketName"
+                           },
+                           "/*"
+                        ]
+                      ]
+                     }] 
+                  }
+               ]
+            },
+            "Roles" : [ { "Ref" : "codeDeployRole" } ],
+            "ManagedPolicyName" : "CodeDeploy-Ec2-S3" 
+         }
+      },
+      "CodeDeployServiceRole": {
+      "Type": "AWS::IAM::Role",
       "Properties": {
-        "GroupName": "csye6225-webapp",
-        "GroupDescription": "Enable HTTP access via port 80, SSH access via port 22, HTTPS access via port 443",
-        "VpcId": {
-            "Ref": "VpcID"
-          },
-        "SecurityGroupIngress": [
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "80",
-            "ToPort": "80",
-            "CidrIp": "0.0.0.0/0"
-          },
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "22",
-            "ToPort": "22",
-            "CidrIp": "0.0.0.0/0"
-          },
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "443",
-            "ToPort": "443",
-            "CidrIp": "0.0.0.0/0"
-          }
-        ],
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Sub": "csye6225-WebAppSecurityGroup"
+        "RoleName": "CodeDeployServiceRole",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "codedeploy.amazonaws.com"
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
             }
-          }
-        ]
-      }
-    },
-    "DBServerSecurityGroup": {
-      "Type": "AWS::EC2::SecurityGroup",
-     "Condition": "Is-EC2-VPC",
-      "Properties": {
-        "GroupName": "csye6225-rds",
-        "GroupDescription": "Allow TCP traffic on port 3306 for MySQL",
-        "VpcId": {
-            "Ref": "VpcID"
-          },
-        "SecurityGroupIngress": [
-          {
-            "IpProtocol": "tcp",
-            "FromPort": 3306,
-            "ToPort": 3306,
-            "SourceSecurityGroupId": {
-              "Ref": "WebServerSecurityGroup"
-            }
-          }
-        ],
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Sub": "csye6225-DBSecurityGroup"
-            }
-          }
-        ]
-      }
-    },
-    "RDSSubnetGroup": {
-      "Type": "AWS::RDS::DBSubnetGroup",
-      "Properties": {
-        "DBSubnetGroupDescription": "Subnet group for RDS Instances",
-        "SubnetIds": [
-          {
-            "Ref": "PublicSubnetKey2"
-          },
-          {
-            "Ref": "PublicSubnetKey3"
-          }
-        ],
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Sub": "csye6225-RDSSubnetGroup"
-            }
-          }
-        ]
-      }
-    },
-    "RDSInstance": {
-      "Type": "AWS::RDS::DBInstance",
-      "Properties": {
-        "DBName": "csye6225",
-        "AllocatedStorage": "100",
-        "DBInstanceClass": "db.t2.medium",
-        "Engine": "MySQL",
-        "MasterUsername": "csye6225master",
-        "MasterUserPassword": "csye6225password",
-        "MultiAZ": false,
-        "DBInstanceIdentifier": "csye6225-spring2019",
-        "PubliclyAccessible": true,
-        "Port": "3306",
-        "DBSubnetGroupName": {
-          "Ref": "RDSSubnetGroup"
+          ]
         },
-"VPCSecurityGroups": { "Fn::If" : [ "Is-EC2-VPC", [ { "Fn::GetAtt": [ "DBServerSecurityGroup", "GroupId" ] } ], { "Ref" : "AWS::NoValue"}]},
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Sub": "csye6225-RDSInstance"
-            }
-          }
-        ]
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
+        ],
+        "Path": "/"
       }
     },
-    "DynamoDBTable": {
-      "Type": "AWS::DynamoDB::Table",
+    "codeDeployApp" : {
+      "Type" : "AWS::CodeDeploy::Application",
+      "Properties" : {
+        "ApplicationName" : "csye6225-webapp",
+        "ComputePlatform" : "Server"
+      }
+    },
+    "deploymentGroup": {
+      "Type": "AWS::CodeDeploy::DeploymentGroup",
       "Properties": {
-        "AttributeDefinitions": [
+        "ApplicationName": { "Ref" : "codeDeployApp"},
+        "Ec2TagFilters": [
           {
-            "AttributeName": "Id",
-            "AttributeType": "S"
-          }
-        ],
-        "KeySchema": [
-          {
-            "AttributeName": "Id",
-            "KeyType": "HASH"
-          }
-        ],
-        "ProvisionedThroughput": {
-          "ReadCapacityUnits": "1",
-          "WriteCapacityUnits": "1"
-        },
-        "TableName": "csye6225",
-        "Tags": [
-          {
-            "Key": "Name",
+            "Key" : "Name",
             "Value": {
-              "Fn::Sub": "csye6225-DynamoDBTable"
-            }
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },
+                  "-csye6225-Ec2Instance"
+                ]
+              ]
+            }, 
+            "Type": "KEY_AND_VALUE"
           }
-        ]
-      }
-    }
-    
-  },
-  "Outputs": {
-    "EC2Instance": {
-      "Description": "The EC2 Instance for Web Server",
-      "Value": {
-        "Ref": "EC2Instance"
-      },
-      "Export": {
-        "Name": {
-          "Fn::Sub": "EC2InstanceID"
+        ],
+        "DeploymentGroupName": "csye6225-webapp-deployment",
+        "DeploymentConfigName": "CodeDeployDefault.AllAtOnce",
+        "DeploymentStyle": {
+          "DeploymentType": "IN_PLACE",
+          "DeploymentOption": "WITHOUT_TRAFFIC_CONTROL"
+        },
+        "ServiceRoleArn": {
+           "Fn::GetAtt": [
+              "CodeDeployServiceRole",
+              "Arn"
+           ]
+        },
+        "AutoRollbackConfiguration": {
+            "Enabled" : "True",
+            "Events" : ["DEPLOYMENT_FAILURE"]
         }
       }
     },
-    "WebServerSecurityGroup": {
-      "Description": "The security group id for the Web Server",
-      "Value": {
-        "Ref": "WebServerSecurityGroup"
+      "myDynamoDB" : {
+         "Type" : "AWS::DynamoDB::Table",
+         "Properties" : {
+            "TableName" : "csye-6225",
+            "AttributeDefinitions" : [
+		  {
+			"AttributeName" : "id",
+			"AttributeType" : "S"   
+		  }
+		],
+		"KeySchema" : [
+		  {
+			"AttributeName" : "id",
+			"KeyType" : "HASH"
+		  }
+		],
+	    "ProvisionedThroughput" : {
+	      "ReadCapacityUnits" : "5",
+	      "WriteCapacityUnits" : "5"
+		    }
+		}
       },
-      "Export": {
-        "Name": {
-          "Fn::Sub": "WebServerSecurityGroupID"
-        }
-      }
-    },
-    "DBServerSecurityGroup": {
-      "Description": "The security group id for the RDS Server",
-      "Value": {
-        "Ref": "DBServerSecurityGroup"
+      "RDSDBSubnetGroup":{  
+         "Type"       :"AWS::RDS::DBSubnetGroup",
+         "Properties" :{  
+            "DBSubnetGroupDescription":"RDS DB Subnet Group",
+            "SubnetIds" : [ 
+               { "Ref" : "subnetId2" },
+               { "Ref" : "subnetId3" }
+            ]
+         }
       },
-      "Export": {
-        "Name": {
-          "Fn::Sub": "DBServerSecurityGroupID"
-        }
-      }
-    },
-    "RDSInstance": {
-      "Description": "The RDS Instance for Backend Database",
-      "Value": {
-        "Ref": "RDSInstance"
+      "myRDSInstance" : {
+         "Type" : "AWS::RDS::DBInstance",
+         "Properties" : {
+            "AllocatedStorage" : "5",
+            "DBInstanceClass" : "db.t2.medium",
+            "DBInstanceIdentifier" : "csye6225-spring2019",
+            "DBSubnetGroupName" : { "Ref"  : "RDSDBSubnetGroup" },
+            "MasterUsername" : "csye6225master",
+            "MasterUserPassword" : "csye6225password",
+            "MultiAZ" : false,
+            "PubliclyAccessible" : true,
+            "Engine" : "MySQL",
+            "VPCSecurityGroups": [{
+               "Ref" : "DBSecurityGroup"
+            }],
+            "DBName" : "csye6225"
+         }     
       },
-      "Export": {
-        "Name": {
-          "Fn::Sub": "RDSInstanceID"
-        }
-      }
-    },
-    "DynamoDBTable": {
-      "Description": "The DynamoDBTableId",
-      "Value": {
-        "Ref": "DynamoDBTable"
+      "webappSecurityGroup" : {
+         "Type" : "AWS::EC2::SecurityGroup",
+         "Properties" : {
+            "GroupDescription" : "Allow http traffic to webserver",
+            "VpcId": {
+                    "Ref": "myVpc"
+                }, 
+            "SecurityGroupIngress" : [
+               {
+                  "IpProtocol": "tcp",
+                  "FromPort" : "22",
+                  "ToPort" : "22",
+                  "CidrIp" : "0.0.0.0/0"
+               },
+               {
+                  "IpProtocol": "tcp",
+                  "FromPort" : "80",
+                  "ToPort" : "80",
+                  "CidrIp" : "0.0.0.0/0"
+               },
+               {
+                  "IpProtocol": "tcp",
+                  "FromPort" : "443",
+                  "ToPort" : "443",
+                  "CidrIp" : "0.0.0.0/0"
+               },
+               {
+                  "IpProtocol": "tcp",
+                  "FromPort" : "8080",
+                  "ToPort" : "8080",
+                  "CidrIp" : "0.0.0.0/0"
+               }
+            ]
+         }
       },
-      "Export": {
-        "Name": {
-          "Fn::Sub": "DynamoDBTableID"
-        }
+       "DBSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Condition": "Is-EC2-VPC",
+            "Properties": {
+                "GroupDescription": "allow connections from specified source security group and ec2 Security group",
+                "VpcId": {
+                    "Ref": "myVpc"
+                },
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "3306",
+                        "ToPort": "3306",
+                        "SourceSecurityGroupId": {
+                            "Ref": "webappSecurityGroup"
+                        }
+                    }
+                ]
+            }
       }
-    }
-    
-  }
+   }
 }

@@ -26,9 +26,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.UUID;
-import com.mysql.cj.jdbc.Driver;
-//import org.postgresql.Driver;
 
 @Service
 public class AmazonClient {
@@ -39,10 +36,13 @@ public class AmazonClient {
     private String endpointUrl;
     @Value("${amazonProperties.bucketName}")
     private String bucketName;
-    @Value("${amazonProperties.accessKey}")
     private String accessKey;
-    @Value("${amazonProperties.secretKey}")
     private String secretKey;
+
+    private AmazonClient(){
+        this.accessKey = System.getenv("ACCESS_KEY");
+        this.secretKey = System.getenv("SECRET_KEY");
+    }
 
     @PostConstruct
     private void initializeAmazon() {

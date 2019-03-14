@@ -26,6 +26,4 @@ server:
 
 amazonProperties:
   endpoint: https://s3.us-east-1.amazonaws.com
-  accessKey: AKIAIGXDKYAQY43J53AQ
-  secretKey: 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
-  bucketName: cf-templates-o1bcsmgxszit-us-east-1
+  bucketName: csye6225-spring2019-dongak.me.csye6225.com

@@ -26,6 +26,4 @@ server:
 
 amazonProperties:
   endpoint:
-  accessKey:
-  secretKey:
   bucketName:

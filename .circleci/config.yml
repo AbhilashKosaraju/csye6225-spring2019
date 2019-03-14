@@ -47,11 +47,11 @@ jobs:
       - run:
           name: Upload Artifact to S3
           command: |
-            aws s3 cp codedeploy_artifact s3://${bucket}
+            aws s3 sync codedeploy_artifact s3://${bucket}
 
       - run:
           name: Make CodeDeploy API call
           command: |
             echo "Hello CodeDeploy"
-            aws deploy create-deployment --application-name csye6225-webapp --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name  csye6225-webapp-deployment  --s3-location bucket=${bucketname},bundleType=zip,key=csye6225-web-app-${CIRCLE_BUILD_NUM}.zip
+            aws deploy create-deployment --application-name csye6225-webapp --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name  csye6225-webapp-deployment  --s3-location bucket=${bucket},bundleType=zip,key=csye6225-web-app-${CIRCLE_BUILD_NUM}.zip
 

@@ -67,12 +67,9 @@
 							[
 								"#!/bin/bash -xe",
 								"pwd",
-								"sudo yum update",
-								"sudo yum install openjdk-8-jdk -y",
-								"sudo yum install ruby -y",
-								"sudo yum install wget -y",
-								"sudo yum install python -y",
 								"sudo yum update -y",
+								"sudo yum install openjdk-8-jdk -y",
+								"sudo yum install python -y",
 								"cd /home/centos",
 								"pwd",
 								"sudo wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install",
@@ -81,17 +78,17 @@
 								"sudo service codedeploy-agent start",
 								"sudo groupadd tomcat",
 								"sudo useradd -M -s /bin/nologin -g tomcat -d /opt/tomcat tomcat",
-								"cd ~",
-								"pwd",
-								"wget http://www-us.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33.tar.gz",
+							
+								"sudo wget http://www-us.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33.tar.gz",
 								"sudo mkdir /opt/tomcat",
-								"sudo tar -zxvf apache-tomcat-8.0.33.tar.gz -C /opt/tomcat --strip-components=1",
+								"sudo tar xvf apache-tomcat-8*tar.gz -C /opt/tomcat --strip-components=1",
 								"cd /opt/tomcat",
-								"sudo chgrp -R tomcat /opt/tomcat",
-								"sudo chmod -R g+r conf",
-								"sudo chmod g+x conf",
+								"sudo chgrp -R tomcat conf",
+								"sudo chmod g+rwx conf",
+								"sudo chmod g+r conf/*",
 								"sudo chown -R tomcat webapps/ work/ temp/ logs/",
 								"cd /etc/systemd/system/",
+            							"sudo touch tomcat.service",
 								"sudo echo '[Unit]' > tomcat.service",
 								"sudo echo Description=Apache Tomcat Web Application Container' >> tomcat.service",
 								"sudo echo After=syslog.target network.target >> tomcat.service",
@@ -349,6 +346,32 @@
          }
       },
 
+"CodeDeployEC2S3": {
+   "Type" : "AWS::IAM::Policy",
+   "Properties" : {
+      "PolicyName" : "CodeDeployEC2S3",
+      "PolicyDocument" : {
+            "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "s3:Get*",
+                "s3:List*",
+		"s3:Put*",
+		"s3:Delete*"
+            ],
+            "Effect": "Allow",
+            "Resource":["arn:aws:s3:::code-deploy.*", "arn:aws:s3:::web-app.*"]
+        }
+    ]
+      },
+        "Roles": [{
+          "Ref": "CodeDeployEC2ServiceRole"
+        }]
+   
+   }
+},
+
       "CodeDeployEC2ServiceRole":{
          "Type":"AWS::IAM::Role",
          "Properties": {
@@ -407,6 +430,7 @@
 
       "Ec2InstanceProfile":{
          "Type":"AWS::IAM::InstanceProfile",
+"DependsOn":"CodeDeployEC2ServiceRole",
          "Properties":{
             "InstanceProfileName":"ec2instanceprofile",
             "Path":"/",

@@ -306,9 +306,9 @@
       },
 
 "CodeDeployEC2S3": {
-   "Type" : "AWS::IAM::Policy",
+   "Type" : "AWS::IAM::ManagedPolicy",
    "Properties" : {
-      "PolicyName" : "CodeDeployEC2S3",
+      
       "PolicyDocument" : {
             "Version": "2012-10-17",
     "Statement": [
@@ -326,7 +326,8 @@
       },
         "Roles": [{
           "Ref": "CodeDeployEC2ServiceRole"
-        }]
+        }],
+   "Users" : ["circleci"]
    
    }
 },

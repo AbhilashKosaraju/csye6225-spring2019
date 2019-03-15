@@ -28,7 +28,7 @@
 		},
       
       "bucketName"    : {
-       "Description"  : "name of bucket where app is to be deployed",
+       "Description"  : "name of bucket where the  app is to be deployed",
        "Type"         : "String"
       }
    },

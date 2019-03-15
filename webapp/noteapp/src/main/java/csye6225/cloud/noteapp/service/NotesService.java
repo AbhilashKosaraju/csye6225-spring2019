@@ -23,7 +23,7 @@ public class NotesService {
         } catch (DataException e){
             throw new AppException(400, e.getMessage());
         } catch (Exception e) {
-            throw new AppException("Error getting all notes");
+            throw new AppException("Error getting all notes ");
         }
     }
 

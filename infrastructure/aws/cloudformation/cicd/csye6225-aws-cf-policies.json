@@ -125,7 +125,7 @@
                               {
                                  "Ref":"AWS::AccountId"
                               },
-                              ":application:csye6225-webapp-deployment"
+                              ":application:csye6225-webapp"
                            ]
                         ]
                      }

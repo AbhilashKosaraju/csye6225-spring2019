@@ -12,7 +12,11 @@ read sn
 }
 export circleciuser=circleci
 
-createres=$(aws cloudformation create-stack  --stack-name $sn --capabilities CAPABILITY_NAMED_IAM --template-body file://csye6225-aws-cf-policies.json  --parameters ParameterKey=circleci,ParameterValue=$circleciuser)
+DOMAIN_NAME=$(aws route53 list-hosted-zones --query HostedZones[0].Name --output text)
+
+CD_DOMAIN="code-deploy."${DOMAIN_NAME%?}
+
+createres=$(aws cloudformation create-stack  --stack-name $sn --capabilities CAPABILITY_NAMED_IAM --template-body file://csye6225-aws-cf-policies.json  --parameters ParameterKey=circleci,ParameterValue=$circleciuser ParameterKey=CDARN,ParameterValue=arn:aws:s3:::$CD_DOMAIN ParameterKey=CDARN1,ParameterValue=arn:aws:s3:::$CD_DOMAIN/*)
 echo Creating stack "$sn". Please wait...
 resp=$(aws cloudformation wait stack-create-complete --stack-name $sn)
 if [[ -z "$resp" ]]; then

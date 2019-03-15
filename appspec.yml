@@ -1,21 +1,12 @@
 version: 0.0
 os: linux
 
-files:
-  - source: ./webapp/noteapp/build/libs/ROOT.war
-    destination: /var/lib/tomcat8/webapps
+files:             
+  - source: ./webapp/noteapp/target/noteapp-1.war
+    destination: /opt/tomcat/webapps
 
 hooks:
   AfterInstall:
    - location: ./afterInstall.sh
-     timeout: 180
-     runas: centos
-  ApplicationStart:
-   - location: ./applicationStart.sh
-     timeout: 180
-     runas: centos
-
-  BeforeInstall:
-   - location: ./beforeInstall.sh
      timeout: 180
      runas: centos

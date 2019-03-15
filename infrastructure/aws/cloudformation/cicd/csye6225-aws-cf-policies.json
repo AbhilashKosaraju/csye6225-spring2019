@@ -4,6 +4,14 @@
       "circleci":{
          "Description":"circleci user",
          "Type":"String"
+      },
+    "CDARN":{
+         "Description":"circleci user",
+         "Type":"String"
+    },
+ "CDARN1":{
+         "Description":"circleci user",
+         "Type":"String"
       }
    },
    "Resources":{
@@ -77,8 +85,9 @@
                         "s3:PutObject"
                      ],
                      "Resource":[
-                        "arn:aws:s3:::code-deploy.*",
-                        "arn:aws:s3:::web-app.*"
+                        { "Ref" : "CDARN" },
+                        { "Ref" : "CDARN1" }
+
                      ]
                   }
                ]
@@ -116,7 +125,7 @@
                               {
                                  "Ref":"AWS::AccountId"
                               },
-                              ":application:CSYE6225WebappCodeDeploy"
+                              ":application:csye6225-webapp"
                            ]
                         ]
                      }
@@ -196,7 +205,7 @@
             ]
          }
       }
+   }
+      }
+   
 
-
-}
-}

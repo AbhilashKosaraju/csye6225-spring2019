@@ -32,9 +32,10 @@ jobs:
           command: |
             echo "Hello the current build number is ${CIRCLE_BUILD_NUM}"
             pwd
+            ls -al
             mkdir -p codedeploy_artifact
             cp infrastructure/aws/codedeploy/*.sh .
-            zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip webapp/noteapp/target/noteapp-0.0.1-SNAPSHOT.jar *.sh *.yml
+            zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip webapp/noteapp/target/noteapp-1.war *.sh *.yml
             mv csye6225-web-app-${CIRCLE_BUILD_NUM}.zip codedeploy_artifact/
             cd codedeploy_artifact
             ls -al
@@ -42,11 +43,15 @@ jobs:
             cd ..
             pwd
             ls -al
+
       - run:
           name: Upload Artifact to S3
           command: |
-            aws s3 sync codedeploy_artifact s3://code-deploy.csye6225-s19-kulkarnishru.me
+            aws s3 sync codedeploy_artifact s3://${bucket}
+
       - run:
-          name: Code-Deployment
+          name: Make CodeDeploy API call
           command: |
-            aws deploy create-deployment --application-name csye6225-webapp --deployment-group-name csye6225-webapp-deployment --s3-location bucket=${S3Bucket},bundleType=zip,key=csye6225-web-app-${CIRCLE_BUILD_NUM}.zip --description "Deployed via CircleCI" --region us-east-1
+            echo "Hello CodeDeploy"
+            aws deploy create-deployment --application-name csye6225-webapp --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name  csye6225-webapp-deployment  --s3-location bucket=${bucket},bundleType=zip,key=csye6225-web-app-${CIRCLE_BUILD_NUM}.zip --region us-east-1
+

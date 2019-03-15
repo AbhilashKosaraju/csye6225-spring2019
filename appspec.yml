@@ -1,0 +1,12 @@
+version: 0.0
+os: linux
+
+files:             
+  - source: ./webapp/noteapp/target/noteapp-1.war
+    destination: /opt/tomcat/webapps
+
+hooks:
+  AfterInstall:
+   - location: ./afterInstall.sh
+     timeout: 180
+     runas: centos

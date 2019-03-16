@@ -190,9 +190,7 @@
 						"Ref": "PublicSubnetKey1"
 					}
 				}],
-				"IamInstanceProfile": {
-					"Ref": "InstanceProfile"
-				},
+				"IamInstanceProfile": "ec2instanceprofile",
 				"Tags": [{
 					"Key": "Name",
 					"Value": {
@@ -229,7 +227,9 @@
 		},
 		"InstanceProfile": {
 			"Type": "AWS::IAM::InstanceProfile",
+			"DependsOn": "codeDeployRole",
 			"Properties": {
+				"InstanceProfileName":"ec2instanceprofile",
 				"Path": "/",
 				"Roles": [{
 					"Ref": "codeDeployRole"
@@ -245,7 +245,9 @@
 						"Effect": "Allow",
 						"Action": [
 							"s3:Get*",
-							"s3:List*"
+							"s3:List*",
+							"s3:Put*",
+							"s3:Delete*"
 						],
 						"Resource": [{
 							"Ref": "CDARN"

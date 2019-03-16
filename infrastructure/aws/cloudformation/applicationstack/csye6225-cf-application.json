@@ -121,6 +121,8 @@
 								"echo '[Install]' >> tomcat.service",
 								"echo 'WantedBy=multi-user.target' >> tomcat.service",
 								"systemctl daemon-reload",
+								"systemctl enable tomcat.service",
+								"systemctl start tomcat.service",
 								"echo '#!/bin/sh' >> /opt/tomcat/bin/setenv.sh \n",
 								{
 									"Fn::Join": [
@@ -154,6 +156,22 @@
 									]
 								},
 								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -DamazonProperties.endpoint=https://s3.us-east-1.amazonaws.com\"'  >> /opt/tomcat/bin/setenv.sh \n",
+								{
+									"Fn::Join": [
+										"", [
+											"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Djsa.s3.bucket=",
+											{
+												"Fn::Join": [
+													"",[
+														"web-app.",
+														{"Ref" : "Bucket3"}
+														]
+														]
+													},
+											"\"' >> /opt/tomcat/bin/setenv.sh \n"
+										]
+									]
+								},
 								"chmod +x /opt/tomcat/bin/setenv.sh\n",
 								"#systemctl daemon-reload\n",
 								"systemctl enable tomcat.service\n",

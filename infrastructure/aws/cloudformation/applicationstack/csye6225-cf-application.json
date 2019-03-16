@@ -120,9 +120,6 @@
 								"echo 'Restart=always' >> tomcat.service",
 								"echo '[Install]' >> tomcat.service",
 								"echo 'WantedBy=multi-user.target' >> tomcat.service",
-								"systemctl daemon-reload",
-								"systemctl enable tomcat.service",
-								"systemctl start tomcat.service",
 								"echo '#!/bin/sh' >> /opt/tomcat/bin/setenv.sh \n",
 								{
 									"Fn::Join": [
@@ -134,14 +131,14 @@
 													"Endpoint.Address"
 												]
 											},
-											":3306/csye6225-spring2019\"' >> /opt/tomcat/bin/setenv.sh \n"
+											":3306/csye6225\"' >> /opt/tomcat/bin/setenv.sh \n"
 										]
 									]
 								},
 								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=dev\"'  >> /opt/tomcat/bin/setenv.sh \n",
 								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=csye6225master\"'  >> /opt/tomcat/bin/setenv.sh \n",
 								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=csye6225password\"'  >> /opt/tomcat/bin/setenv.sh \n",
-								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.dbname=csye6225-spring2019\"'  >> /opt/tomcat/bin/setenv.sh \n",
+								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.dbname=csye6225\"'  >> /opt/tomcat/bin/setenv.sh \n",
 								{
 									"Fn::Join": [
 										"", [

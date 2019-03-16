@@ -4,6 +4,7 @@ spring:
     url:
     password:
     username:
+    dbname:
     testWhileIdle: true
     validationQuery: SELECT 1
   jpa:

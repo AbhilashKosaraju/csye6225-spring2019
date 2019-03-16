@@ -18,6 +18,10 @@
        "Description"  : "Id for subnet3",
        "Type"         : "String"
       },
+     "circleci":{
+         "Description":"circleci user",
+         "Type":"String"
+      },
        "KeyName": {
 			"Description": "EC2 KeyPair to enable SSH access to the instance",
 			"Type": "AWS::EC2::KeyPair::KeyName"
@@ -27,10 +31,10 @@
 		"Type": "String"
 		},
       
-      "bucketName"    : {
-       "Description"  : "name of bucket where app is to be deployed",
-       "Type"         : "String"
-      }
+      "CDARN": {"Type":"String"},
+"CDARN1": {"Type": "String"},
+"Bucket":{"Type": "String"},
+"Bucket1":{"Type": "String"}
    },
    "Conditions": {
         "Is-EC2-VPC": {
@@ -105,8 +109,6 @@
 			"echo '[Install]' >> tomcat.service",
 			"echo 'WantedBy=multi-user.target' >> tomcat.service",
 			"systemctl daemon-reload",
-			"systemctl enable tomcat.service",
-			"systemctl start tomcat.service",
 			"echo '#!/bin/sh' >> /opt/tomcat/bin/setenv.sh \n",						
 			{
 				"Fn::Join": [
@@ -123,24 +125,11 @@
 				]
 			},
 			"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=dev\"'  >> /opt/tomcat/bin/setenv.sh \n",
-			"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=${MasterUsername}\"'  >> /opt/tomcat/bin/setenv.sh \n",
-			"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=${MasterUserPassword}\"'  >> /opt/tomcat/bin/setenv.sh \n",
-			{
-				"Fn::Join": [
-					"", [
-						"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Djsa.s3.bucket=",
-						{
-							"Fn::Join": [
-								"",[
-									"web-app.",
-									{"Ref" : "bucketName"}
-									]
-									]
-								},
-						"\"' >> /opt/tomcat/bin/setenv.sh \n"
-					]
-				]
-			},
+			"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=csye6225master\"'  >> /opt/tomcat/bin/setenv.sh \n",
+			"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=csye6225password\"'  >> /opt/tomcat/bin/setenv.sh \n",
+			"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.dbname=csye6225\"'  >> /opt/tomcat/bin/setenv.sh \n",
+			"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -DamazonProperties.bucketName=${Bucket}\"'  >> /opt/tomcat/bin/setenv.sh \n",
+			"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -DamazonProperties.endpoint=https://s3.us-east-1.amazonaws.com\"'  >> /opt/tomcat/bin/setenv.sh \n",
 			"chmod +x /opt/tomcat/bin/setenv.sh\n",
 			"#systemctl daemon-reload\n",
 			"systemctl enable tomcat.service\n",
@@ -228,23 +217,17 @@
                         "s3:Get*",
                         "s3:List*"
                      ],
-                     "Resource":[{
-                     "Fn::Join": [
-                        "",
-                        [
-                           "arn:aws:s3:::",
-                           {
-                              "Ref": "bucketName"
-                           },
-                           "/*"
-                        ]
-                      ]
-                     }] 
+                     "Resource": [{"Ref": "CDARN"}, {"Ref":"CDARN1"}, {"Ref":"Bucket"}, {"Ref": "Bucket1"}]
                   }
                ]
             },
             "Roles" : [ { "Ref" : "codeDeployRole" } ],
-            "ManagedPolicyName" : "CodeDeploy-Ec2-S3" 
+            "ManagedPolicyName" : "CodeDeploy-Ec2-S3",
+            "Users":[
+               {
+                  "Ref":"circleci"
+               }
+            ]
          }
       },
       "CodeDeployServiceRole": {
@@ -355,16 +338,16 @@
             "AllocatedStorage" : "5",
             "DBInstanceClass" : "db.t2.medium",
             "DBInstanceIdentifier" : "csye6225-spring2019",
+            "DBName" : "csye6225",
             "DBSubnetGroupName" : { "Ref"  : "RDSDBSubnetGroup" },
+            "Engine" : "MySQL",
             "MasterUsername" : "csye6225master",
             "MasterUserPassword" : "csye6225password",
             "MultiAZ" : false,
             "PubliclyAccessible" : true,
-            "Engine" : "MySQL",
             "VPCSecurityGroups": [{
                "Ref" : "DBSecurityGroup"
-            }],
-            "DBName" : "csye6225"
+            }]
          }     
       },
       "webappSecurityGroup" : {

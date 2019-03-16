@@ -36,6 +36,14 @@ public class AmazonClient {
     private String endpointUrl;
     @Value("${amazonProperties.bucketName}")
     private String bucketName;
+    @Value("${spring.datasource.url}")
+    private static String rdsUrl;
+    @Value("${spring.datasource.username}")
+    private static String username;
+    @Value("${spring.datasource.dbname}")
+    private static String dbname;
+    @Value("${spring.datasource.password}")
+    private static String password;
 
     @PostConstruct
     private void initializeAmazon() {
@@ -88,22 +96,13 @@ public class AmazonClient {
         if (System.getenv("RDS_HOSTNAME") != null) {
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
-                //Class.forName("org.postgresql.Driver");
-                String dbName = System.getenv("RDS_DB_NAME");
-                String userName = System.getenv("RDS_USERNAME");
-                String password = System.getenv("RDS_PASSWORD");
-                String hostname = System.getenv("RDS_HOSTNAME");
-                String port = System.getenv("RDS_PORT");
-                String jdbcUrl = "jdbc:mysql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password=" + password;
-                //String jdbcUrl = "jdbc:postgresql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password=" + password;
-                //logger.trace("Getting remote connection with connection string from environment variables.");
+                String jdbcUrl = "jdbc:mysql://" + rdsUrl + ":3306/" + dbname + "?user=" + username + "&password=" + password;
                 Connection con = DriverManager.getConnection(jdbcUrl);
-                //logger.info("Remote connection successful.");
                 return con;
             }
-            catch (ClassNotFoundException e) { //logger.warn(e.toString());
+            catch (ClassNotFoundException e) {
                  }
-            catch (SQLException e) { //logger.warn(e.toString());
+            catch (SQLException e) {
             }
         }
         return null;

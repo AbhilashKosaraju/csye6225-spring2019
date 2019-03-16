@@ -121,6 +121,8 @@
 								"echo '[Install]' >> tomcat.service",
 								"echo 'WantedBy=multi-user.target' >> tomcat.service",
 								"systemctl daemon-reload",
+								"systemctl enable tomcat.service",
+								"systemctl start tomcat.service",
 								"echo '#!/bin/sh' >> /opt/tomcat/bin/setenv.sh \n",
 								{
 									"Fn::Join": [
@@ -143,7 +145,7 @@
 								{
 									"Fn::Join": [
 										"", [
-											"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -DamazonProperties.bucketName=",
+											"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.amazonProperties.bucketName=",
 
 											{
 												"Ref": "Bucket3"
@@ -153,7 +155,23 @@
 										]
 									]
 								},
-								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -DamazonProperties.endpoint=https://s3.us-east-1.amazonaws.com\"'  >> /opt/tomcat/bin/setenv.sh \n",
+								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.amazonProperties.endpoint=https://s3.us-east-1.amazonaws.com\"'  >> /opt/tomcat/bin/setenv.sh \n",
+								{
+									"Fn::Join": [
+										"", [
+											"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Djsa.s3.bucket=",
+											{
+												"Fn::Join": [
+													"",[
+														"",
+														{"Ref" : "Bucket3"}
+														]
+														]
+													},
+											"\"' >> /opt/tomcat/bin/setenv.sh \n"
+										]
+									]
+								},
 								"chmod +x /opt/tomcat/bin/setenv.sh\n",
 								"#systemctl daemon-reload\n",
 								"systemctl enable tomcat.service\n",
@@ -172,9 +190,7 @@
 						"Ref": "PublicSubnetKey1"
 					}
 				}],
-				"IamInstanceProfile": {
-					"Ref": "InstanceProfile"
-				},
+				"IamInstanceProfile": "ec2instanceprofile",
 				"Tags": [{
 					"Key": "Name",
 					"Value": {
@@ -211,7 +227,9 @@
 		},
 		"InstanceProfile": {
 			"Type": "AWS::IAM::InstanceProfile",
+			"DependsOn": "codeDeployRole",
 			"Properties": {
+				"InstanceProfileName":"ec2instanceprofile",
 				"Path": "/",
 				"Roles": [{
 					"Ref": "codeDeployRole"
@@ -227,7 +245,9 @@
 						"Effect": "Allow",
 						"Action": [
 							"s3:Get*",
-							"s3:List*"
+							"s3:List*",
+							"s3:Put*",
+							"s3:Delete*"
 						],
 						"Resource": [{
 							"Ref": "CDARN"

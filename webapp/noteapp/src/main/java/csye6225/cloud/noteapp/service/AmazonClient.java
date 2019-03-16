@@ -98,6 +98,10 @@ public class AmazonClient {
                 Connection con = DriverManager.getConnection(jdbcUrl);
                 return con;
             }
+            catch (ClassNotFoundException e) {
+            }
+            catch (SQLException e) {
+            }
         }
         return null;
     }

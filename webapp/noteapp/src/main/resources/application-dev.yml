@@ -20,10 +20,9 @@ spring:
       file-size-threshold: 2KB
       max-file-size: 10MB
       max-request-size: 12MB
+  amazonProperties:
+    endpoint: https://s3.us-east-1.amazonaws.com
+    bucketName:
 
 server:
   port: 8080
-
-amazonProperties:
-  endpoint:
-  bucketName:

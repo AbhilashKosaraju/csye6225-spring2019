@@ -48,6 +48,7 @@ jobs:
           name: Upload Artifact to S3
           command: |
             aws s3 sync codedeploy_artifact s3://${bucket}
+            echo 'The code deploy artifact is pushed to ${bucket}'
 
       - run:
           name: Make CodeDeploy API call

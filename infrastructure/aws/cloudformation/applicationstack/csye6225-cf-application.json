@@ -7,7 +7,7 @@
 			"Type": "String"
 		},
 		"PublicSubnetKey1": {
-			"Description": "Id for subnet1",
+			"Description": "Id for Subnet1",
 			"Type": "String"
 		},
 		"PublicSubnetKey2": {

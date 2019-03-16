@@ -85,9 +85,16 @@ then
 	exit 1
 fi
 
-zone=$(aws route53 list-hosted-zones --query HostedZones[].{Name:Name} --output text | sed 's/.$//')
-    bucket="code-deploy.$zone"
-    echo "bucketName = $bucket"
+export circleciuser=circleci
+
+DOMAIN_NAME=$(aws route53 list-hosted-zones --query HostedZones[0].Name --output text)
+Bucket="${DOMAIN_NAME}csye6225.com"
+
+echo "Bucket='${DOMAIN_NAME}csye6225.com'"
+
+DOMAIN_NAME1=$(aws route53 list-hosted-zones --query HostedZones[0].Name --output text)
+
+CD_DOMAIN="code-deploy."${DOMAIN_NAME1%?}
 
 # Create CloudFormation Stack
 echo "Validating template"
@@ -102,7 +109,7 @@ echo "Cloudformation template validation success"
 echo "Now Creating CloudFormation Stack"
 
 
-CRTSTACK_Code=`aws cloudformation create-stack --stack-name $appStackName --template-body file://./csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM --parameters   ParameterKey=KeyName,ParameterValue=$keyName ParameterKey=myVpc,ParameterValue=$vpcID ParameterKey=PublicSubnetKey1,ParameterValue=$subnetid1 ParameterKey=PublicSubnetKey2,ParameterValue=$subnetid2 ParameterKey=PublicSubnetKey3,ParameterValue=$subnetid3 ParameterKey=bucketName,ParameterValue=$bucket ParameterKey=ImageID,ParameterValue=$imageid`
+CRTSTACK_Code=`aws cloudformation create-stack --stack-name $appStackName --template-body file://./csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM --parameters   ParameterKey=KeyName,ParameterValue=$keyName ParameterKey=myVpc,ParameterValue=$vpcID ParameterKey=circleci,ParameterValue=$circleciuser ParameterKey=PublicSubnetKey1,ParameterValue=$subnetid1 ParameterKey=PublicSubnetKey2,ParameterValue=$subnetid2 ParameterKey=PublicSubnetKey3,ParameterValue=$subnetid3  ParameterKey=ImageID,ParameterValue=$imageid ParameterKey=Bucket,ParameterValue=arn:aws:s3:::$Bucket ParameterKey=Bucket1,ParameterValue=arn:aws:s3:::$Bucket/* ParameterKey=CDARN,ParameterValue=arn:aws:s3:::$CD_DOMAIN ParameterKey=CDARN1,ParameterValue=arn:aws:s3:::$CD_DOMAIN/ ParameterKey=Bucket3,ParameterValue=$Bucket`
 
 if [ -z "$CRTSTACK_Code" ]
 then

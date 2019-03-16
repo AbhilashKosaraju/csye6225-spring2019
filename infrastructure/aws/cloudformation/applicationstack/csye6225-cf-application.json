@@ -42,6 +42,9 @@
 		},
 		"Bucket1": {
 			"Type": "String"
+		},
+		"Bucket3": {
+			"Type": "String"
 		}
 	},
 	"Conditions": {
@@ -136,14 +139,14 @@
 								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=dev\"'  >> /opt/tomcat/bin/setenv.sh \n",
 								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=csye6225master\"'  >> /opt/tomcat/bin/setenv.sh \n",
 								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=csye6225password\"'  >> /opt/tomcat/bin/setenv.sh \n",
-								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.dbname=csye6225\"'  >> /opt/tomcat/bin/setenv.sh \n",
+								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.dbname=csye6225-spring2019\"'  >> /opt/tomcat/bin/setenv.sh \n",
 								{
 									"Fn::Join": [
 										"", [
 											"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -DamazonProperties.bucketName=",
 
 											{
-												"Ref": "Bucket"
+												"Ref": "Bucket3"
 											},
 
 											"\"' >> /opt/tomcat/bin/setenv.sh \n"

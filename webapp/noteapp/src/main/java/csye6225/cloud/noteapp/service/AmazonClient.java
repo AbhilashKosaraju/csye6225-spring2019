@@ -32,9 +32,9 @@ public class AmazonClient {
 
     private AmazonS3 s3client;
 
-    @Value("${amazonProperties.endpoint}")
+    @Value("${spring.amazonProperties.endpoint}")
     private String endpointUrl;
-    @Value("${amazonProperties.bucketName}")
+    @Value("${spring.amazonProperties.bucketName}")
     private String bucketName;
     @Value("${spring.datasource.url}")
     private static String rdsUrl;

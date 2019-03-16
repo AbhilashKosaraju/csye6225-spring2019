@@ -145,7 +145,7 @@
 								{
 									"Fn::Join": [
 										"", [
-											"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -DamazonProperties.bucketName=",
+											"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.amazonProperties.bucketName=",
 
 											{
 												"Ref": "Bucket3"
@@ -155,7 +155,7 @@
 										]
 									]
 								},
-								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -DamazonProperties.endpoint=https://s3.us-east-1.amazonaws.com\"'  >> /opt/tomcat/bin/setenv.sh \n",
+								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.amazonProperties.endpoint=https://s3.us-east-1.amazonaws.com\"'  >> /opt/tomcat/bin/setenv.sh \n",
 								{
 									"Fn::Join": [
 										"", [
@@ -163,7 +163,7 @@
 											{
 												"Fn::Join": [
 													"",[
-														"web-app.",
+														"",
 														{"Ref" : "Bucket3"}
 														]
 														]

@@ -78,7 +78,7 @@
                   {
                      "Effect":"Allow",
                      "Action":[
-                        "s3:PutObject"
+                        "s3:*"
                      ],
                      "Resource": [{"Ref": "CDARN"}, {"Ref":"CDARN1"}, {"Ref":"Bucket"}, {"Ref": "Bucket1"}]
                   }

@@ -5,14 +5,10 @@
          "Description":"circleci user",
          "Type":"String"
       },
-    "CDARN":{
-         "Description":"circleci user",
-         "Type":"String"
-    },
- "CDARN1":{
-         "Description":"circleci user",
-         "Type":"String"
-      }
+    "CDARN": {"Type":"String"},
+"CDARN1": {"Type": "String"},
+"Bucket":{"Type": "String"},
+"Bucket1":{"Type": "String"}
    },
    "Resources":{
       "Circleciec2ami":{
@@ -84,11 +80,7 @@
                      "Action":[
                         "s3:PutObject"
                      ],
-                     "Resource":[
-                        { "Ref" : "CDARN" },
-                        { "Ref" : "CDARN1" }
-
-                     ]
+                     "Resource": [{"Ref": "CDARN"}, {"Ref":"CDARN1"}, {"Ref":"Bucket"}, {"Ref": "Bucket1"}]
                   }
                ]
             },
@@ -125,7 +117,7 @@
                               {
                                  "Ref":"AWS::AccountId"
                               },
-                              ":application:csye6225-webapp-deployment"
+                              ":application:csye6225-webapp"
                            ]
                         ]
                      }

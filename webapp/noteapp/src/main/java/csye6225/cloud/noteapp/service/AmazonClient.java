@@ -40,8 +40,6 @@ public class AmazonClient {
     private static String rdsUrl;
     @Value("${spring.datasource.username}")
     private static String username;
-    @Value("${spring.datasource.dbname}")
-    private static String dbname;
     @Value("${spring.datasource.password}")
     private static String password;
 
@@ -96,7 +94,7 @@ public class AmazonClient {
         if (System.getenv("RDS_HOSTNAME") != null) {
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
-                String jdbcUrl = "jdbc:mysql://" + rdsUrl + ":3306/" + dbname + "?user=" + username + "&password=" + password;
+                String jdbcUrl = rdsUrl + "?user=" + username + "&password=" + password;
                 Connection con = DriverManager.getConnection(jdbcUrl);
                 return con;
             }

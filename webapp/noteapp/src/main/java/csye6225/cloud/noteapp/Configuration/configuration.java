@@ -37,8 +37,8 @@ public class configuration  extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER);
         http.csrf().disable();
-        http.authorizeRequests().antMatchers(HttpMethod.POST, "/user/register","/").permitAll()
-                .antMatchers("/note","/note/*").hasRole("ADMIN").and().httpBasic();
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/user/register","/test").permitAll()
+                .antMatchers("/","/note","/note/*").hasRole("ADMIN").and().httpBasic();
     }
 
     @Bean

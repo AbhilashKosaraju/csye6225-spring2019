@@ -5,39 +5,12 @@
          "Description":"circleci user",
          "Type":"String"
       },
-     "CDAPPNAME":{
-         "Type":"String"
-      },
-
-"CDARN": {
-"Type":"String"},
-	"CDARN1": {"Type": "String"},
-	"Bucket":{"Type": "String"},
-	"Bucket1":{"Type": "String"}
+    "CDARN": {"Type":"String"},
+"CDARN1": {"Type": "String"},
+"Bucket":{"Type": "String"},
+"Bucket1":{"Type": "String"}
    },
-"Resources":{
-   "CodeDeployEC2S3": {
-   "Type" : "AWS::IAM::Policy",
-   "Properties" : {
-      "PolicyName" : "CodeDeploy-EC2S3",
-      "PolicyDocument" : {
-            "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Action": [
-                "s3:Get*",
-                "s3:List*",
-		"s3:Put*",
-		"s3:Delete*"
-            ],
-            "Effect": "Allow",
-            "Resource": [{"Ref": "CDARN"}, {"Ref":"CDARN1"}, {"Ref":"Bucket"}, {"Ref": "Bucket1"}]
-        }
-    ]
-      },
-    "Users" : ["circleci"]
-   }
-},
+   "Resources":{
       "Circleciec2ami":{
          "Type":"AWS::IAM::ManagedPolicy",
          "Properties":{
@@ -105,11 +78,12 @@
                   {
                      "Effect":"Allow",
                      "Action":[
-                        "s3:PutObject"
+			"s3:Get*",
+			"s3:List*",
+			"s3:Put*",
+			"s3:Delete*"
                      ],
-                     "Resource":[
-                      {"Ref": "CDARN"}, {"Ref":"CDARN1"}, {"Ref":"Bucket"}, {"Ref": "Bucket1"}
-                     ]
+                     "Resource": [{"Ref": "CDARN"}, {"Ref":"CDARN1"}, {"Ref":"Bucket"}, {"Ref": "Bucket1"}]
                   }
                ]
             },
@@ -146,10 +120,7 @@
                               {
                                  "Ref":"AWS::AccountId"
                               },
-                              ":application:",
-                    {
-                      "Ref": "CDAPPNAME"
-                    }
+                              ":application:csye6225-webapp"
                            ]
                         ]
                      }
@@ -229,7 +200,7 @@
             ]
          }
       }
+   }
+      }
+   
 
-
-}
-}

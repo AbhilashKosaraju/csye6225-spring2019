@@ -1,9 +1,9 @@
 spring:
   profile: dev
   datasource:
-    url: jdbc:mysql://csye6225.cnewmoox6eb2.us-east-1.rds.amazonaws.com:3306/csye6225
-    password: root-ubuntu
-    username: root
+    url:
+    password:
+    username:
     testWhileIdle: true
     validationQuery: SELECT 1
   jpa:
@@ -20,12 +20,9 @@ spring:
       file-size-threshold: 2KB
       max-file-size: 10MB
       max-request-size: 12MB
+  amazonProperties:
+    endpoint: https://s3.us-east-1.amazonaws.com
+    bucketName:
 
 server:
-  port: 9091
-
-amazonProperties:
-  endpoint: https://s3.us-east-1.amazonaws.com
-  accessKey: AKIAIGXDKYAQY43J53AQ
-  secretKey: 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
-  bucketName: cf-templates-o1bcsmgxszit-us-east-1
+  port: 8080

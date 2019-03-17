@@ -96,6 +96,16 @@ public class UserController {
 
     }
 
+    @GetMapping("/test")
+    public String gettrialTime(){
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        String date = timestamp.toString();
+        JsonObject entity = new JsonObject();
+        entity.addProperty("Date",date);
+        return entity.toString();
+
+    }
+
     public String hashpw(String pass){
         return BCrypt.hashpw(pass,BCrypt.gensalt(salt));
     }

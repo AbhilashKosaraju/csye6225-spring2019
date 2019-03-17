@@ -34,7 +34,7 @@ The application stack includes, EC2 instance, DynamoDB Table, S3 Bucket and RDS 
 Security groups for Web servers and DB Servers have been created as per the requirements. 
 
 ## Deploy Instructions
-
+The note app developed is being deployed with AWS CodeDeploy. The CircleCI has been employed for continous integration and building of the changes made to the API repos,(the API repo and the AMI repo).
 
 ## Running Tests
 

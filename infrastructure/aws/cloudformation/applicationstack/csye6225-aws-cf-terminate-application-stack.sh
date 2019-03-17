@@ -1,7 +1,6 @@
 #!/bin/bash
 echo Enter stack name to be deleted
 read sn
-#aws cloudformation wait stack-exists $sn
 {
   aws cloudformation describe-stacks --stack-name $sn &&
   echo stack "$sn" found

@@ -32,10 +32,16 @@ public class AmazonClient {
 
     private AmazonS3 s3client;
 
-    @Value("${amazonProperties.endpoint}")
+    @Value("${spring.amazonProperties.endpoint}")
     private String endpointUrl;
-    @Value("${amazonProperties.bucketName}")
+    @Value("${spring.amazonProperties.bucketName}")
     private String bucketName;
+    @Value("${spring.datasource.url}")
+    private String rdsUrl;
+    @Value("${spring.datasource.username}")
+    private String username;
+    @Value("${spring.datasource.password}")
+    private String password;
 
     @PostConstruct
     private void initializeAmazon() {
@@ -84,26 +90,17 @@ public class AmazonClient {
         return "Successfully deleted";
     }
 
-    public static Connection getRemoteConnection() {
+    public Connection getRemoteConnection() {
         if (System.getenv("RDS_HOSTNAME") != null) {
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
-                //Class.forName("org.postgresql.Driver");
-                String dbName = System.getenv("RDS_DB_NAME");
-                String userName = System.getenv("RDS_USERNAME");
-                String password = System.getenv("RDS_PASSWORD");
-                String hostname = System.getenv("RDS_HOSTNAME");
-                String port = System.getenv("RDS_PORT");
-                String jdbcUrl = "jdbc:mysql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password=" + password;
-                //String jdbcUrl = "jdbc:postgresql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password=" + password;
-                //logger.trace("Getting remote connection with connection string from environment variables.");
+                String jdbcUrl = rdsUrl + "?user=" + username + "&password=" + password;
                 Connection con = DriverManager.getConnection(jdbcUrl);
-                //logger.info("Remote connection successful.");
                 return con;
             }
-            catch (ClassNotFoundException e) { //logger.warn(e.toString());
-                 }
-            catch (SQLException e) { //logger.warn(e.toString());
+            catch (ClassNotFoundException e) {
+            }
+            catch (SQLException e) {
             }
         }
         return null;

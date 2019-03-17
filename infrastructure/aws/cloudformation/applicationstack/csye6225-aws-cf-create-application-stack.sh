@@ -8,7 +8,7 @@ fi
 echo "$networkStackName"
 
 
-
+#application
 echo "Please enter Application Stack Name:"
 read appStackName
 if [ -z "$appStackName" ]
@@ -30,7 +30,7 @@ fi
 echo "$keyName"
 
 #echo "Please enter the ImageID of centos AMI  created"
-#read imageid
+
 echo "Your latest AMI ID is:"
 imageid=$(aws ec2 describe-images --filters "Name=name,Values=csye6225*" --query "sort_by(Images, &CreationDate)[-1].[ImageId]" --output "text")
 if [ $? -eq 0 ]

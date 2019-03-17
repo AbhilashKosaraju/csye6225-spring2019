@@ -99,7 +99,7 @@ public class AmazonClient {
                 return con;
             }
             catch (ClassNotFoundException e) {
-                 }
+            }
             catch (SQLException e) {
             }
         }

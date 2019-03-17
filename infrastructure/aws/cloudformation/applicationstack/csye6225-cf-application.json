@@ -379,9 +379,22 @@
 				"MasterUserPassword": "csye6225password",
 				"MultiAZ": false,
 				"PubliclyAccessible": true,
-				"VPCSecurityGroups": [{
-					"Ref": "DBSecurityGroup"
-				}]
+				"VPCSecurityGroups":{
+               "Fn::If":[
+                  "Is-EC2-VPC",
+		  [
+                     {
+                        "Fn::GetAtt":[
+                           "DBSecurityGroup",
+                           "GroupId"
+                        ]
+                     }
+                  ],
+                  {
+                     "Ref":"AWS::NoValue"
+                  }
+               ]
+            }
 			}
 		},
 		"webappSecurityGroup": {
@@ -414,6 +427,12 @@
 						"FromPort": "8080",
 						"ToPort": "8080",
 						"CidrIp": "0.0.0.0/0"
+					},
+{
+						"IpProtocol": "tcp",
+						"FromPort": "9000",
+						"ToPort": "9000",
+						"CidrIp": "0.0.0.0/0"
 					}
 				]
 			}
@@ -422,6 +441,7 @@
 			"Type": "AWS::EC2::SecurityGroup",
 			"Condition": "Is-EC2-VPC",
 			"Properties": {
+			     "GroupName":"csye6225-rds",
 				"GroupDescription": "allow connections from specified source security group and ec2 Security group",
 				"VpcId": {
 					"Ref": "myVpc"

@@ -8,7 +8,7 @@ fi
 echo "$networkStackName"
 
 
-
+#application
 echo "Please enter Application Stack Name:"
 read appStackName
 if [ -z "$appStackName" ]
@@ -30,7 +30,7 @@ fi
 echo "$keyName"
 
 #echo "Please enter the ImageID of centos AMI  created"
-#read imageid
+
 echo "Your latest AMI ID is:"
 imageid=$(aws ec2 describe-images --filters "Name=name,Values=csye6225*" --query "sort_by(Images, &CreationDate)[-1].[ImageId]" --output "text")
 if [ $? -eq 0 ]
@@ -107,7 +107,7 @@ echo "Cloudformation template validation success"
 echo "Now Creating CloudFormation Stack"
 
 
-CRTSTACK_Code=`aws cloudformation create-stack --stack-name $appStackName --template-body file://./csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM --parameters   ParameterKey=KeyName,ParameterValue=$keyName ParameterKey=myVpc,ParameterValue=$vpcID ParameterKey=circleci,ParameterValue=$circleciuser ParameterKey=PublicSubnetKey1,ParameterValue=$subnetid1 ParameterKey=PublicSubnetKey2,ParameterValue=$subnetid2 ParameterKey=PublicSubnetKey3,ParameterValue=$subnetid3  ParameterKey=ImageID,ParameterValue=$imageid ParameterKey=Bucket,ParameterValue=arn:aws:s3:::$Bucket ParameterKey=Bucket1,ParameterValue=arn:aws:s3:::$Bucket/* ParameterKey=CDARN,ParameterValue=arn:aws:s3:::$CD_DOMAIN ParameterKey=CDARN1,ParameterValue=arn:aws:s3:::$CD_DOMAIN/ ParameterKey=Bucket3,ParameterValue=$Bucket`
+CRTSTACK_Code=`aws cloudformation create-stack --stack-name $appStackName --template-body file://./csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM --parameters   ParameterKey=KeyName,ParameterValue=$keyName ParameterKey=myVpc,ParameterValue=$vpcID ParameterKey=circleci,ParameterValue=$circleciuser ParameterKey=PublicSubnetKey1,ParameterValue=$subnetid1 ParameterKey=PublicSubnetKey2,ParameterValue=$subnetid2 ParameterKey=PublicSubnetKey3,ParameterValue=$subnetid3  ParameterKey=ImageID,ParameterValue=$imageid ParameterKey=Bucket,ParameterValue=arn:aws:s3:::$Bucket ParameterKey=Bucket1,ParameterValue=arn:aws:s3:::$Bucket/* ParameterKey=CDARN,ParameterValue=arn:aws:s3:::$CD_DOMAIN ParameterKey=CDARN1,ParameterValue=arn:aws:s3:::$CD_DOMAIN/* ParameterKey=Bucket3,ParameterValue=$Bucket`
 
 if [ -z "$CRTSTACK_Code" ]
 then

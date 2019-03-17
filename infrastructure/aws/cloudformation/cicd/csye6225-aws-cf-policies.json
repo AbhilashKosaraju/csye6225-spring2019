@@ -78,7 +78,10 @@
                   {
                      "Effect":"Allow",
                      "Action":[
-                        "s3:PutObject"
+			"s3:Get*",
+			"s3:List*",
+			"s3:Put*",
+			"s3:Delete*"
                      ],
                      "Resource": [{"Ref": "CDARN"}, {"Ref":"CDARN1"}, {"Ref":"Bucket"}, {"Ref": "Bucket1"}]
                   }

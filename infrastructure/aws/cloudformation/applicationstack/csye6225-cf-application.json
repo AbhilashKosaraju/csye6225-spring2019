@@ -120,9 +120,6 @@
 								"echo 'Restart=always' >> tomcat.service",
 								"echo '[Install]' >> tomcat.service",
 								"echo 'WantedBy=multi-user.target' >> tomcat.service",
-								"systemctl daemon-reload",
-								"systemctl enable tomcat.service",
-								"systemctl start tomcat.service",
 								"echo '#!/bin/sh' >> /opt/tomcat/bin/setenv.sh \n",
 								{
 									"Fn::Join": [
@@ -134,14 +131,14 @@
 													"Endpoint.Address"
 												]
 											},
-											":3306/csye6225-spring2019\"' >> /opt/tomcat/bin/setenv.sh \n"
+											":3306/csye6225\"' >> /opt/tomcat/bin/setenv.sh \n"
 										]
 									]
 								},
 								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=dev\"'  >> /opt/tomcat/bin/setenv.sh \n",
 								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=csye6225master\"'  >> /opt/tomcat/bin/setenv.sh \n",
 								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=csye6225password\"'  >> /opt/tomcat/bin/setenv.sh \n",
-								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.dbname=csye6225-spring2019\"'  >> /opt/tomcat/bin/setenv.sh \n",
+								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.dbname=csye6225\"'  >> /opt/tomcat/bin/setenv.sh \n",
 								{
 									"Fn::Join": [
 										"", [
@@ -382,9 +379,22 @@
 				"MasterUserPassword": "csye6225password",
 				"MultiAZ": false,
 				"PubliclyAccessible": true,
-				"VPCSecurityGroups": [{
-					"Ref": "DBSecurityGroup"
-				}]
+				"VPCSecurityGroups":{
+               "Fn::If":[
+                  "Is-EC2-VPC",
+		  [
+                     {
+                        "Fn::GetAtt":[
+                           "DBSecurityGroup",
+                           "GroupId"
+                        ]
+                     }
+                  ],
+                  {
+                     "Ref":"AWS::NoValue"
+                  }
+               ]
+            }
 			}
 		},
 		"webappSecurityGroup": {
@@ -417,6 +427,12 @@
 						"FromPort": "8080",
 						"ToPort": "8080",
 						"CidrIp": "0.0.0.0/0"
+					},
+{
+						"IpProtocol": "tcp",
+						"FromPort": "9000",
+						"ToPort": "9000",
+						"CidrIp": "0.0.0.0/0"
 					}
 				]
 			}
@@ -425,6 +441,7 @@
 			"Type": "AWS::EC2::SecurityGroup",
 			"Condition": "Is-EC2-VPC",
 			"Properties": {
+			     "GroupName":"csye6225-rds",
 				"GroupDescription": "allow connections from specified source security group and ec2 Security group",
 				"VpcId": {
 					"Ref": "myVpc"

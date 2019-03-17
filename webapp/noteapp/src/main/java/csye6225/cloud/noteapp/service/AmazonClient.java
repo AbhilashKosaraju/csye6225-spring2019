@@ -37,11 +37,11 @@ public class AmazonClient {
     @Value("${spring.amazonProperties.bucketName}")
     private String bucketName;
     @Value("${spring.datasource.url}")
-    private static String rdsUrl;
+    private String rdsUrl;
     @Value("${spring.datasource.username}")
-    private static String username;
+    private String username;
     @Value("${spring.datasource.password}")
-    private static String password;
+    private String password;
 
     @PostConstruct
     private void initializeAmazon() {
@@ -90,7 +90,7 @@ public class AmazonClient {
         return "Successfully deleted";
     }
 
-    public static Connection getRemoteConnection() {
+    public Connection getRemoteConnection() {
         if (System.getenv("RDS_HOSTNAME") != null) {
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
@@ -99,7 +99,7 @@ public class AmazonClient {
                 return con;
             }
             catch (ClassNotFoundException e) {
-                 }
+            }
             catch (SQLException e) {
             }
         }

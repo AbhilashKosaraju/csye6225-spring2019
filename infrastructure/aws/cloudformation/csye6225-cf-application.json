@@ -112,7 +112,7 @@
 								"echo 'Restart=always' >> tomcat.service",
 								"echo '[Install]' >> tomcat.service",
 								"echo 'WantedBy=multi-user.target' >> tomcat.service",
-								"systemctl daemon-reload",
+								"#systemctl daemon-reload",
 								"echo '#!/bin/sh' >> /opt/tomcat/bin/setenv.sh \n",
 								{
 									"Fn::Join": [

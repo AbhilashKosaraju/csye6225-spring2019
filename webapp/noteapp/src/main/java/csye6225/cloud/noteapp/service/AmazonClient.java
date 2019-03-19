@@ -91,7 +91,6 @@ public class AmazonClient {
     }
 
     public Connection getRemoteConnection() {
-        if (System.getenv("RDS_HOSTNAME") != null) {
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 String jdbcUrl = rdsUrl + "?user=" + username + "&password=" + password;
@@ -102,7 +101,7 @@ public class AmazonClient {
             }
             catch (SQLException e) {
             }
-        }
+
         return null;
     }
 }

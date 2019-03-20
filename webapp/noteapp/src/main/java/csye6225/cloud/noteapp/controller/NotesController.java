@@ -43,7 +43,7 @@ public class NotesController {
     @Value("${spring.profile}")
     private String profile;
 
-    @GetMapping("/note")
+    @GetMapping("/notekeyur")
     public List<Notes> getNotes(Authentication auth) throws AppException {
         List<Notes> notesList = notesService.getUserNotes(auth.getName());
         return notesList;

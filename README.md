@@ -34,7 +34,7 @@ The application stack includes, EC2 instance, DynamoDB Table, S3 Bucket and RDS 
 Security groups for Web servers and DB Servers have been created as per the requirements. 
 
 ## Deploy Instructions
-The note app developed is being deployed with AWS CodeDeploy. The CircleCI has been employed for continous integration and building of the changes made to the API repos,(the API repo and the AMI repo).
+The note app developed is being deployed with AWS CodeDeploy. Code Deploy Agent from us-east-1 has been added to the centos-ami-template.json to install the agent in the AMI being built. AWS CodeDeploy appspec.yml file has been created and placed in the root of the noteapp repository to enable the deployment of the web application on EC2 instances. An S3 bucket with the specified naming conventions has been created in AWS to hold the deployed files on cloud.
 
 ## Running Tests
 
@@ -42,5 +42,5 @@ Unit tests in the JUnit framework have been developed to verify various
 working functionalities( REST endpoints) of the noteapp Web API. 
 
 ## CI/CD
-
+Continuous integration and continuous delivery is being achieved with CircleCI platform. Appropriate user roles with necessary permissions and policies have been attached to circleci user in AWS. Both the Noteapp repository and the AMI repository have been linked to CircleCI for triggering automatic builds. The AWS credentials and the bucket name for sending the builds have been added to the repository environemnt variables.  
 

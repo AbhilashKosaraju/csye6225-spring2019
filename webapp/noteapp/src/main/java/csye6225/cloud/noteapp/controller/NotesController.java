@@ -43,13 +43,13 @@ public class NotesController {
     @Value("${spring.profile}")
     private String profile;
 
-    @GetMapping("/note")
+    @GetMapping("/notepatil")
     public List<Notes> getNotes(Authentication auth) throws AppException {
         List<Notes> notesList = notesService.getUserNotes(auth.getName());
         return notesList;
     }
 
-    @PostMapping(value= "/note")
+    @PostMapping(value= "/notepatil")
     public ResponseEntity<Object> createNote(@Valid @RequestBody Notes note,Authentication auth) throws AppException {
         String title = note.getTitle();
         String content = note.getContent();

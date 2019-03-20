@@ -86,7 +86,7 @@ public class UserController {
 
     }
 
-    @GetMapping("/abhi")
+    @GetMapping("/")
     public String getTime(){
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String date = timestamp.toString();

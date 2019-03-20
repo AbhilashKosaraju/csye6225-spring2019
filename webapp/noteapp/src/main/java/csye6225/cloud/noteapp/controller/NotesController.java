@@ -49,7 +49,7 @@ public class NotesController {
         return notesList;
     }
 
-    @PostMapping(value= "/note")
+    @PostMapping(value= "/notepatil")
     public ResponseEntity<Object> createNote(@Valid @RequestBody Notes note,Authentication auth) throws AppException {
         String title = note.getTitle();
         String content = note.getContent();

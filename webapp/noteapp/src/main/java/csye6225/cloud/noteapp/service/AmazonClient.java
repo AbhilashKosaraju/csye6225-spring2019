@@ -76,7 +76,7 @@ public class AmazonClient {
             String fileName = uuid + "-" + multipartFile.getOriginalFilename();
             fileUrl = endpointUrl + "/" + bucketName + "/" + fileName;
             uploadFileTos3bucket(fileName, file);
-            file.delete();
+            //file.delete();
         } catch (Exception e) {
             logger.error("Error in uploading multipart file", e);
             e.printStackTrace();

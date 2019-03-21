@@ -253,7 +253,7 @@
 				},
 				"ManagedPolicyName": "LogRolePolicy",
 				"Roles": [{
-					"Ref": "CodeDeployEC2ServiceRole"
+					"Ref": "codeDeployRole"
 				}]
 			}
 		},

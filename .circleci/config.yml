@@ -35,8 +35,7 @@ jobs:
             ls -al
             mkdir -p codedeploy_artifact
             cp infrastructure/aws/codedeploy/*.sh .
-            zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip webapp/noteapp/target/noteapp-1.war *.sh *.yml
-            mv csye6225-web-app-${CIRCLE_BUILD_NUM}.zip codedeploy_artifact/
+            zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip webapp/noteapp/target/noteapp-1.war *.sh *.yml *.json
             cd codedeploy_artifact
             ls -al
             pwd

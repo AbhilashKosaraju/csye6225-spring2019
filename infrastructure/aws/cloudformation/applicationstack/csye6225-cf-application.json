@@ -136,9 +136,13 @@
 									]
 								},
 								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=dev\"'  >> /opt/tomcat/bin/setenv.sh \n",
+
 								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=csye6225master\"'  >> /opt/tomcat/bin/setenv.sh \n",
 								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=csye6225password\"'  >> /opt/tomcat/bin/setenv.sh \n",
 								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.dbname=csye6225\"'  >> /opt/tomcat/bin/setenv.sh \n",
+                                                                "sudo mkdir -p /var/awslogs/etc/ \n",
+								"cd /var/awslogs/etc/ && sudo wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py \n",
+
 								{
 									"Fn::Join": [
 										"", [

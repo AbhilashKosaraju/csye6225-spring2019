@@ -9,6 +9,7 @@ read sn
   echo cannot find stack "$sn".Exiting Script
   exit 1
 }
+#aws cloudformation delete stack
 {
     aws cloudformation delete-stack --stack-name $sn &&
     echo Deleting stack "$sn". Please wait...

@@ -8,7 +8,7 @@
             "files": {
                 "collect_list": [
                     {
-                        "file_path": "/opt/tomcat/logs/noteapp.log",
+                        "file_path": "/opt/tomcat/logs/*.log",
                         "log_group_name": "csye6225_spring2019",
                         "log_stream_name": "webapp",
                         "timestamp_format": "%H:%M:%S %y %b %-d"

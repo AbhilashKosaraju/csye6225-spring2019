@@ -32,6 +32,8 @@ A shell script has been employed to create and configure required application re
 A shell script to delete the application CloudFormation stack has been created.
 The application stack includes, EC2 instance, DynamoDB Table, S3 Bucket and RDS Instance with the specified configurations to support the REST API deployment. 
 Security groups for Web servers and DB Servers have been created as per the requirements. 
+Packer build template has been updated to install the Unified CloudWatch Agent in the AMIs.
+systemd service has been employed to start, stop and restart the CloudWatch agent.
 
 ## Deploy Instructions
 The note app developed is being deployed with AWS CodeDeploy. Code Deploy Agent from us-east-1 has been added to the centos-ami-template.json to install the agent in the AMI being built. AWS CodeDeploy appspec.yml file has been created and placed in the root of the noteapp repository to enable the deployment of the web application on EC2 instances. An S3 bucket with the specified naming conventions has been created in AWS to hold the deployed files on cloud.

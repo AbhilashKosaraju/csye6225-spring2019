@@ -1,6 +1,5 @@
 package csye6225.cloud.noteapp.service;
 
-import csye6225.cloud.noteapp.controller.AttachmentController;
 import csye6225.cloud.noteapp.exception.AppException;
 import csye6225.cloud.noteapp.model.Attachment;
 import csye6225.cloud.noteapp.model.Notes;
@@ -16,13 +15,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class AttachmentService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AttachmentService.class);
 
     private static String local_storage = "/home/keyur/Documents/temp";
 

@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import csye6225.cloud.noteapp.exception.AppException;
 import csye6225.cloud.noteapp.model.User;
 import csye6225.cloud.noteapp.repository.UserRepository;
+import csye6225.cloud.noteapp.service.MetricsConfig;
 import csye6225.cloud.noteapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,11 +27,15 @@ public class UserController {
 
     public static int salt = 10;
 
+    @Autowired
+    public MetricsConfig metricsConfig;
+
     public static final Pattern email_pattern = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
     @PostMapping(value = "/user/register")
     public ResponseEntity<Object> createUser(@Valid @RequestBody User user) throws AppException{
 
+        metricsConfig.statsDClient().incrementCounter("create user");
         Matcher matcher = email_pattern.matcher(user.getEmail());
         boolean isEmail = matcher.find();
 
@@ -88,16 +93,7 @@ public class UserController {
 
     @GetMapping("/")
     public String getTime(){
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        String date = timestamp.toString();
-        JsonObject entity = new JsonObject();
-        entity.addProperty("Date",date);
-        return entity.toString();
-
-    }
-
-    @GetMapping("/test")
-    public String gettrialTime(){
+        metricsConfig.statsDClient().incrementCounter("get time");
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String date = timestamp.toString();
         JsonObject entity = new JsonObject();

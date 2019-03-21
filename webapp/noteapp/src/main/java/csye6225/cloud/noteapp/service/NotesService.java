@@ -7,11 +7,14 @@ import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.security.Principal;
 import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class NotesService {
+
+    private static final Logger logger = LoggerFactory.getLogger(NotesService.class);
 
     @Autowired
     private NotesRepository noteRepository;

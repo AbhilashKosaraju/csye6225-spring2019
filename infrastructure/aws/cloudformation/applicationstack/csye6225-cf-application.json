@@ -136,13 +136,9 @@
 									]
 								},
 								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.profiles.active=dev\"'  >> /opt/tomcat/bin/setenv.sh \n",
-
 								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.username=csye6225master\"'  >> /opt/tomcat/bin/setenv.sh \n",
 								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.password=csye6225password\"'  >> /opt/tomcat/bin/setenv.sh \n",
 								"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Dspring.datasource.dbname=csye6225\"'  >> /opt/tomcat/bin/setenv.sh \n",
-                                                                "sudo mkdir -p /var/awslogs/etc/ \n",
-								"cd /var/awslogs/etc/ && sudo wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py \n",
-
 								{
 									"Fn::Join": [
 										"", [
@@ -163,12 +159,14 @@
 											"sudo echo 'JAVA_OPTS=\"$JAVA_OPTS -Djsa.s3.bucket=",
 											{
 												"Fn::Join": [
-													"",[
+													"", [
 														"",
-														{"Ref" : "Bucket3"}
-														]
-														]
-													},
+														{
+															"Ref": "Bucket3"
+														}
+													]
+												]
+											},
 											"\"' >> /opt/tomcat/bin/setenv.sh \n"
 										]
 									]
@@ -226,11 +224,44 @@
 				"Path": "/"
 			}
 		},
+		"LogRolePolicy": {
+			"Type": "AWS::IAM::ManagedPolicy",
+			"Properties": {
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+							"Action": [
+								"logs:CreateLogGroup",
+								"logs:CreateLogStream",
+								"logs:PutLogEvents",
+								"logs:DescribeLogStreams"
+							],
+							"Effect": "Allow",
+							"Resource": [
+								"arn:aws:logs:::*"
+							]
+						},
+						{
+							"Effect": "Allow",
+							"Action": [
+								"cloudwatch:PutMetricAlarm",
+								"cloudwatch:PutMetricData"
+							],
+							"Resource": "*"
+						}
+					]
+				},
+				"ManagedPolicyName": "LogRolePolicy",
+				"Roles": [{
+					"Ref": "CodeDeployEC2ServiceRole"
+				}]
+			}
+		},
 		"InstanceProfile": {
 			"Type": "AWS::IAM::InstanceProfile",
 			"DependsOn": "codeDeployRole",
 			"Properties": {
-				"InstanceProfileName":"ec2instanceprofile",
+				"InstanceProfileName": "ec2instanceprofile",
 				"Path": "/",
 				"Roles": [{
 					"Ref": "codeDeployRole"
@@ -383,22 +414,20 @@
 				"MasterUserPassword": "csye6225password",
 				"MultiAZ": false,
 				"PubliclyAccessible": true,
-				"VPCSecurityGroups":{
-               "Fn::If":[
-                  "Is-EC2-VPC",
-		  [
-                     {
-                        "Fn::GetAtt":[
-                           "DBSecurityGroup",
-                           "GroupId"
-                        ]
-                     }
-                  ],
-                  {
-                     "Ref":"AWS::NoValue"
-                  }
-               ]
-            }
+				"VPCSecurityGroups": {
+					"Fn::If": [
+						"Is-EC2-VPC",
+						[{
+							"Fn::GetAtt": [
+								"DBSecurityGroup",
+								"GroupId"
+							]
+						}],
+						{
+							"Ref": "AWS::NoValue"
+						}
+					]
+				}
 			}
 		},
 		"webappSecurityGroup": {
@@ -432,7 +461,7 @@
 						"ToPort": "8080",
 						"CidrIp": "0.0.0.0/0"
 					},
-{
+					{
 						"IpProtocol": "tcp",
 						"FromPort": "9000",
 						"ToPort": "9000",
@@ -445,7 +474,7 @@
 			"Type": "AWS::EC2::SecurityGroup",
 			"Condition": "Is-EC2-VPC",
 			"Properties": {
-			     "GroupName":"csye6225-rds",
+				"GroupName": "csye6225-rds",
 				"GroupDescription": "allow connections from specified source security group and ec2 Security group",
 				"VpcId": {
 					"Ref": "myVpc"

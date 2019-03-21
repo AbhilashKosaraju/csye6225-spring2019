@@ -32,6 +32,7 @@ public class NotesService {
 
     public Notes createNote(String title, String content,String name) throws AppException {
         try {
+            logger.info("Creating Note with" + title );
             List<Notes> notesList  = getAllNotes();
             for (Notes n : notesList) {
                 if (n.getTitle().equalsIgnoreCase(title) && n.getUser_id().equalsIgnoreCase(name)) {
@@ -49,14 +50,17 @@ public class NotesService {
 
             return noteRepository.save(newnote);
         } catch (DataException e){
+            logger.error("Dataexception in creating note", e);
             throw new AppException(400, e.getMessage());
         } catch (Exception e) {
+            logger.error("Exception in creating note",e);
             throw new AppException("Error creating note");
         }
     }
 
 
     public Notes findNotesById(String noteId){
+        logger.info("Finding note by noteID"+ noteId);
         Iterable<Notes> notesList = noteRepository.findAll();
         Notes notes = null;
         for(Notes note : notesList){
@@ -69,6 +73,7 @@ public class NotesService {
 
     public List<Notes> getUserNotes(String user) throws AppException{
         try{
+            logger.info("Getting all notes created  by user" + user);
             List<Notes> notesList = getAllNotes();
             List<Notes> userNotes = new ArrayList<Notes>();
             for(Notes note : notesList) {
@@ -77,6 +82,7 @@ public class NotesService {
             }
             return userNotes;
         } catch (Exception e){
+            logger.error("Exception in getting all the notes", e);
             throw new AppException(400,e.getMessage());
         }
     }

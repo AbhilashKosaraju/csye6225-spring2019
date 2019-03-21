@@ -7,10 +7,7 @@ import csye6225.cloud.noteapp.model.Notes;
 import csye6225.cloud.noteapp.repository.AttachmentRepository;
 import csye6225.cloud.noteapp.repository.NotesRepository;
 import csye6225.cloud.noteapp.repository.UserRepository;
-import csye6225.cloud.noteapp.service.AmazonClient;
-import csye6225.cloud.noteapp.service.AttachmentService;
-import csye6225.cloud.noteapp.service.NotesService;
-import csye6225.cloud.noteapp.service.UserService;
+import csye6225.cloud.noteapp.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -40,17 +37,21 @@ public class NotesController {
     @Autowired
     private AttachmentService as;
 
+    @Autowired
+    public MetricsConfig metricsConfig;
+
     @Value("${spring.profile}")
     private String profile;
 
-    @GetMapping("/notepatil")
+    @GetMapping("/note")
     public List<Notes> getNotes(Authentication auth) throws AppException {
         List<Notes> notesList = notesService.getUserNotes(auth.getName());
         return notesList;
     }
 
-    @PostMapping(value= "/notepatil")
+    @PostMapping(value= "/note")
     public ResponseEntity<Object> createNote(@Valid @RequestBody Notes note,Authentication auth) throws AppException {
+        metricsConfig.statsDClient().incrementCounter("create note");
         String title = note.getTitle();
         String content = note.getContent();
         if(title != null && content != null) {
@@ -61,6 +62,7 @@ public class NotesController {
                 entity.addProperty("NoteID", nt.getNote_id());
                 return ResponseEntity.status(201).body(entity.toString());
             }else{
+                metricsConfig.statsDClient().decrementCounter("create note");
                 JsonObject entity = new JsonObject();
                 entity.addProperty("Error","A note with same title already exists for this user. Please create another or update old one.");
                 return ResponseEntity.badRequest().body(entity.toString());
@@ -75,6 +77,7 @@ public class NotesController {
 
     @GetMapping("/note/{id}")
     public ResponseEntity<Object> getNote(@PathVariable final String id,Authentication auth){
+        metricsConfig.statsDClient().incrementCounter("get note");
         Notes note = notesService.findNotesById(id);
         if(note != null)
             if(auth.getName().equalsIgnoreCase(note.getUser_id())) {
@@ -93,10 +96,12 @@ public class NotesController {
 
     @PutMapping("/note/{noteId}")
     public ResponseEntity<Object> updateNote(@RequestBody Notes note,@PathVariable final String noteId, Authentication auth){
+        metricsConfig.statsDClient().incrementCounter("update note");
         Notes userNotes = notesService.findNotesById(noteId);
         Notes updated = null;
         if (userNotes == null) {
             JsonObject entity = new JsonObject();
+            metricsConfig.statsDClient().decrementCounter("update note");
             entity.addProperty("Error", "Note not found");
             return ResponseEntity.status(404).body(entity.toString());
         }
@@ -126,9 +131,10 @@ public class NotesController {
 
     @DeleteMapping("/note/{id}")
     public ResponseEntity<Object> deleteNote( @PathVariable final String id, Authentication auth){
-
+        metricsConfig.statsDClient().incrementCounter("delete note");
         if(id == null){
             JsonObject entity = new JsonObject();
+            metricsConfig.statsDClient().decrementCounter("delete note");
             entity.addProperty("Error", "Please enter a valid note id");
             return ResponseEntity.badRequest().body(entity.toString());
         }

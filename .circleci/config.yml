@@ -36,6 +36,7 @@ jobs:
             mkdir -p codedeploy_artifact
             cp infrastructure/aws/codedeploy/*.sh .
             zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip webapp/noteapp/target/noteapp-1.war *.sh *.yml *.json
+            mv csye6225-web-app-${CIRCLE_BUILD_NUM}.zip codedeploy_artifact/
             cd codedeploy_artifact
             ls -al
             pwd
@@ -54,4 +55,3 @@ jobs:
           command: |
             echo "Hello CodeDeploy"
             aws deploy create-deployment --application-name csye6225-webapp --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name  csye6225-webapp-deployment  --s3-location bucket=${bucket},bundleType=zip,key=csye6225-web-app-${CIRCLE_BUILD_NUM}.zip --region us-east-1
-

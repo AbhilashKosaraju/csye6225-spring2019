@@ -49,7 +49,6 @@ public class AmazonClient {
         try {
             logger.info("Converting Multipart file to a file");
             File convFile = new File(file.getOriginalFilename());
-            convFile.createNewFile();
             FileOutputStream fos = new FileOutputStream(convFile);
             fos.write(file.getBytes());
             fos.close();
@@ -63,12 +62,17 @@ public class AmazonClient {
     private void uploadFileTos3bucket(String fileName, File file) {
         logger.info("Uploading file to s3 bucket");
         System.out.println("Uploading file started ");
-        s3client.putObject(new PutObjectRequest(bucketName, fileName, file).withCannedAcl(CannedAccessControlList.PublicRead));
+        s3client.putObject(new PutObjectRequest(bucketName, fileName, file));
         System.out.println("Uploading file done");
     }
 
     public String uploadFile(MultipartFile multipartFile, String uuid) {
-
+        System.out.println("--------------------------");
+        System.out.println("Owner string:-");
+        System.out.println(s3client.getS3AccountOwner().toString());
+        System.out.println("Listing buckets");
+        System.out.println(s3client.listBuckets());
+        System.out.println("--------------------------");
         String fileUrl = "";
         try {
             logger.info("Uploading multipart file");

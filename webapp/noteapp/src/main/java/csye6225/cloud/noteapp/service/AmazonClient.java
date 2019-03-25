@@ -50,6 +50,7 @@ public class AmazonClient {
             logger.info("Converting Multipart file to a file");
             logger.info("222");
             File convFile = new File(file.getOriginalFilename());
+            convFile.createNewFile();
             logger.info("333");
             FileOutputStream fos = new FileOutputStream(convFile);
             logger.info("444");

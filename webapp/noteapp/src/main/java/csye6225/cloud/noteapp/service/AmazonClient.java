@@ -48,13 +48,13 @@ public class AmazonClient {
     private File convertMultiPartToFile(MultipartFile file) throws IOException {
         try {
             logger.info("Converting Multipart file to a file");
-            System.out.println("222");
+            logger.info("222");
             File convFile = new File(file.getOriginalFilename());
-            System.out.println("333");
+            logger.info("333");
             FileOutputStream fos = new FileOutputStream(convFile);
-            System.out.println("444");
+            logger.info("444");
             fos.write(file.getBytes());
-            System.out.println("555");
+            logger.info("555");
             fos.close();
             return convFile;
         } catch (IOException e) {
@@ -66,9 +66,9 @@ public class AmazonClient {
     private void uploadFileTos3bucket(String fileName, File file) {
         logger.info("Uploading file to s3 bucket");
         System.out.println("Uploading file started ");
-        System.out.println("777");
+        logger.info("777");
         s3client.putObject(new PutObjectRequest(bucketName, fileName, file).withCannedAcl(CannedAccessControlList.PublicRead));
-        System.out.println("888");
+        logger.info("888");
         System.out.println("--------------------------");
         System.out.println("Owner string:-");
         System.out.println(s3client.getS3AccountOwner().toString());
@@ -83,13 +83,13 @@ public class AmazonClient {
         String fileUrl = "";
         try {
             logger.info("Uploading multipart file");
-            System.out.println("111");
+            logger.info("111");
             File file = convertMultiPartToFile(multipartFile);
-            System.out.println("666");
+            logger.info("666");
             String fileName = uuid + "-" + multipartFile.getOriginalFilename();
             fileUrl = endpointUrl + "/" + bucketName + "/" + fileName;
             uploadFileTos3bucket(fileName, file);
-            System.out.println("999");
+            logger.info("999");
             //file.delete();
         } catch (Exception e) {
             logger.error("Error in uploading multipart file", e);

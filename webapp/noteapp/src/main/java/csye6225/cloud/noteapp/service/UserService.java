@@ -32,7 +32,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        logger.info("Loading user by username" + username);
+        logger.info("Loading user by username " + username);
         User user = findUserByEmail(username);
         if(user == null){
             throw new UsernameNotFoundException(username + " not found");
@@ -63,10 +63,10 @@ public class UserService implements UserDetailsService {
             List<User> userList = userRepository.findAll();
             return userList;
         } catch (DataException e){
-            logger.error("Exception in getting all existing users",e);
+            logger.error("Exception in getting all existing users : ",e);
             throw new AppException(400, e.getMessage());
         } catch (Exception e) {
-            logger.error("Exception in getting all existing users",e);
+            logger.error("Exception in getting all existing users : ",e);
             throw new AppException("Error getting all users");
         }
     }
@@ -89,10 +89,10 @@ public class UserService implements UserDetailsService {
 
             return userRepository.save(newuser);
         } catch (DataException e){
-            logger.error("Data Exception in creating user",e);
+            logger.error("Data Exception in creating user : ",e);
             throw new AppException(400, e.getMessage());
         } catch (Exception e) {
-            logger.error("Exception in creating user",e);
+            logger.error("Exception in creating user : ",e);
             throw new AppException("Error creating person");
         }
     }

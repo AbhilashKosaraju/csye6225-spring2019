@@ -450,14 +450,40 @@
 				"AttributeDefinitions": [{
 					"AttributeName": "id",
 					"AttributeType": "S"
+				},
+				{
+					"AttributeName": "email",
+					"AttributeType": "S"
+				},{
+					"AttributeName": "crt_ts",
+					"AttributeType": "N"
+				},{
+					"AttributeName": "exp_ts",
+					"AttributeType": "N"
 				}],
 				"KeySchema": [{
 					"AttributeName": "id",
 					"KeyType": "HASH"
-				}],
+				},{
+					"AttributeName": "email",
+					"KeyType": "RANGE"
+				},{
+					"AttributeName": "crt_ts",
+					"KeyType": "RANGE"
+				},{
+					"AttributeName": "exp_ts",
+					"KeyType": "RANGE"
+				},
+
+
+],
 				"ProvisionedThroughput": {
 					"ReadCapacityUnits": "5",
 					"WriteCapacityUnits": "5"
+				},
+				"TimeToLiveSpecification": {
+		  	 		"AttributeName" : "exp_ts",
+					"Enabled": "true"
 				}
 			}
 		},

@@ -54,7 +54,7 @@ public class AttachmentController {
 
     @PostMapping("/note/{noteid}/attachment")
     public ResponseEntity<Object> addAttachments(@RequestParam("file") MultipartFile file, Authentication auth, @PathVariable final String noteid) throws AppException, SQLException {
-        metricsConfig.statsDClient().incrementCounter("create attachment");
+        metricsConfig.statsDClient().incrementCounter("Adding_attachments");
         if (file.isEmpty()) {
             JsonObject entity = new JsonObject();
             entity.addProperty("Error","Please attach one file.");
@@ -94,7 +94,7 @@ public class AttachmentController {
             return ResponseEntity.status(201).body("");
         }else{
             JsonObject entity = new JsonObject();
-            metricsConfig.statsDClient().decrementCounter("create attachment");
+            metricsConfig.statsDClient().decrementCounter("Adding_attachments");
             entity.addProperty("Error", "Access denied.");
             return ResponseEntity.status(401).body(entity.toString());
         }
@@ -102,7 +102,7 @@ public class AttachmentController {
 
     @PutMapping("/note/{noteid}/attachment/{attachmentid}")
     public ResponseEntity<Object> updateAttachments(@RequestParam("file") MultipartFile file, Authentication auth, @PathVariable final String noteid, @PathVariable final String attachmentid) throws AppException, SQLException {
-        metricsConfig.statsDClient().incrementCounter("update attachment");
+        metricsConfig.statsDClient().incrementCounter("Update_attachments");
 
         if (file.isEmpty()) {
             JsonObject entity = new JsonObject();
@@ -134,7 +134,7 @@ public class AttachmentController {
             }
             if(status == null){
                 JsonObject entity = new JsonObject();
-                metricsConfig.statsDClient().decrementCounter("update attachment");
+                metricsConfig.statsDClient().decrementCounter("Update_attachments");
                 entity.addProperty("Error", "Attachment not found. Please enter a valid attachment ID");
                 return ResponseEntity.ok().body(entity.toString());
             }else{
@@ -144,7 +144,7 @@ public class AttachmentController {
             }
         }else{
             JsonObject entity = new JsonObject();
-            metricsConfig.statsDClient().decrementCounter("update attachment");
+            metricsConfig.statsDClient().decrementCounter("Update_attachments");
             entity.addProperty("Error", "Access denied.");
             return ResponseEntity.status(401).body(entity.toString());
         }
@@ -152,7 +152,7 @@ public class AttachmentController {
 
     @DeleteMapping("/note/{noteid}/attachment/{attachmentid}")
     public ResponseEntity<Object> deleteAttachments(Authentication auth, @PathVariable final String noteid, @PathVariable final String attachmentid) throws AppException, SQLException {
-        metricsConfig.statsDClient().incrementCounter("delete attachment");
+        metricsConfig.statsDClient().incrementCounter("Deleting_attachment");
         if (noteid == null || attachmentid == null) {
             JsonObject entity = new JsonObject();
             entity.addProperty("Error", "Please enter a valid note & attachment id");

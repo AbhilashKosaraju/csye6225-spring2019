@@ -224,6 +224,30 @@
 				"Path": "/"
 			}
 		},
+"SNSPolicy": {
+			"Type": "AWS::IAM::ManagedPolicy",
+                        "Properties":{
+						"ManagedPolicyName": "Ec2sns",
+						"PolicyDocument": {
+
+							"Version": "2012-10-17",
+							"Statement": [{
+
+								"Effect": "Allow",
+								"Action": "sns:*",
+								"Resource": "*"
+							}]
+							},
+                                                 
+                        			 "Roles": [{
+						"Ref": "codeDeployRole"
+						}],
+"Users": [{
+					"Ref": "circleci"
+				}]
+						}
+		},
+
 		"LogRolePolicy": {
 			"Type": "AWS::IAM::ManagedPolicy",
 			"Properties": {
@@ -254,6 +278,9 @@
 				"ManagedPolicyName": "LogRolePolicy",
 				"Roles": [{
 					"Ref": "codeDeployRole"
+				}],
+"Users": [{
+					"Ref": "circleci"
 				}]
 			}
 		},
@@ -323,6 +350,56 @@
 				"Path": "/"
 			}
 		},
+
+"lambdaServiceRole": {
+			"Type": "AWS::IAM::Role",
+			"Properties": {
+				"RoleName": "lambda-sns-execution-role",
+				"AssumeRolePolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Effect": "Allow",
+						"Principal": {
+							"Service": "lambda.amazonaws.com"
+						},
+						"Action": ["sts:AssumeRole"]
+					}]
+				},
+				"ManagedPolicyArns": ["arn:aws:iam::aws:policy/AmazonSESFullAccess"],
+				"Path": "/",
+				"Policies":
+
+				[{
+					"PolicyName": "lambda_dynamoDB_permissions",
+					"PolicyDocument": {
+						"Version": "2012-10-17",
+						"Statement": [{
+								"Effect": "Allow",
+								"Action": [
+									"logs:CreateLogGroup",
+									"logs:CreateLogStream",
+									"logs:PutLogEvents"
+								],
+								"Resource": "arn:aws:logs:*:*:*"
+							},
+							{
+								"Effect": "Allow",
+								"Action": [
+									"dynamodb:*"
+								],
+								"Resource": [
+									"*"
+								]
+							}
+						]
+					}
+				}]
+
+
+			}
+		},
+				
+
 		"codeDeployApp": {
 			"Type": "AWS::CodeDeploy::Application",
 			"Properties": {
@@ -399,6 +476,13 @@
 				]
 			}
 		},
+"snsTopic" : {
+  "Type" : "AWS::SNS::Topic",
+  "Properties" : {
+    "DisplayName" : "password_reset",
+    "TopicName" : "password_reset"
+  }
+},
 		"myRDSInstance": {
 			"Type": "AWS::RDS::DBInstance",
 			"Properties": {

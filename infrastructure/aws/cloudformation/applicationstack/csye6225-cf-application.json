@@ -227,7 +227,7 @@
 "SNSPolicy": {
 			"Type": "AWS::IAM::ManagedPolicy",
                         "Properties":{
-						"PolicyName": "Ec2_sns",
+						"ManagedPolicyName": "Ec2sns",
 						"PolicyDocument": {
 
 							"Version": "2012-10-17",
@@ -238,10 +238,13 @@
 								"Resource": "*"
 							}]
 							},
-                                                 "ManagedPolicyName": "LogRolePolicy",
+                                                 
                         			 "Roles": [{
 						"Ref": "codeDeployRole"
-						}]
+						}],
+"Users": [{
+					"Ref": "circleci"
+				}]
 						}
 		},
 
@@ -275,6 +278,9 @@
 				"ManagedPolicyName": "LogRolePolicy",
 				"Roles": [{
 					"Ref": "codeDeployRole"
+				}],
+"Users": [{
+					"Ref": "circleci"
 				}]
 			}
 		},
@@ -361,8 +367,6 @@
 				},
 				"ManagedPolicyArns": ["arn:aws:iam::aws:policy/AmazonSESFullAccess"],
 				"Path": "/",
-
-
 				"Policies":
 
 				[{

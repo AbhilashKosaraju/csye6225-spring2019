@@ -1,7 +1,6 @@
 package csye6225.cloud.noteapp.service;
 
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -42,36 +41,16 @@ public class AmazonClient {
     private void initializeAmazon() {
         logger.info(" Initializing Amazon S3 client ");
         this.s3client = AmazonS3ClientBuilder.standard()
-                .withRegion(Regions.US_EAST_1)
                 .withCredentials(new InstanceProfileCredentialsProvider(false))
                 .build();
     }
 
-    private File convertMultiPartToFile(MultipartFile file1) throws IOException {
+    private File convertMultiPartToFile(MultipartFile file) throws IOException {
         try {
             logger.info(" Converting Multipart file to a file ");
-            File file = new File(file1.getOriginalFilename());
-            if(file.exists())
-            {
-                //Setting execute permission for owner only
-
-                boolean result = file.setExecutable(true);
-
-                logger.info("Is execute permission for owner set successfully? "+result);
-            }
-            else
-            {
-                logger.info("Sorry...File doesn't exist.");
-            }
-
-            file.mkdir();
-            file.setReadable(true, false);
-            file.setWritable(true, false);
-            file.createNewFile();
-            FileOutputStream fos = new FileOutputStream(file);
-            fos.write(file1.getBytes());
-            fos.close();
-            return file;
+            File convFile = new File(System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + file.getOriginalFilename());
+            file.transferTo(convFile);
+            return convFile;
         } catch (IOException e) {
             logger.error("Error in converting file : "+e);
             throw new IOException("Error converting file : ",e);
@@ -92,7 +71,7 @@ public class AmazonClient {
             String fileName = uuid + "-" + multipartFile.getOriginalFilename();
             fileUrl = endpointUrl + "/" + bucketName + "/" + fileName;
             uploadFileTos3bucket(fileName, file);
-            //file.delete();
+            file.delete();
         } catch (Exception e) {
             logger.error("Error in uploading multipart file : ",e);
             e.printStackTrace();

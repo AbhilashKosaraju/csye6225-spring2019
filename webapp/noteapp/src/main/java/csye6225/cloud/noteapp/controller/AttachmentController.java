@@ -10,6 +10,7 @@ import csye6225.cloud.noteapp.service.AmazonClient;
 import csye6225.cloud.noteapp.service.AttachmentService;
 import csye6225.cloud.noteapp.service.MetricsConfig;
 import csye6225.cloud.noteapp.service.NotesService;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,15 +25,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Date;
+
+import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -70,10 +68,6 @@ public class AttachmentController {
                                                  HttpServletRequest req, HttpServletResponse res) throws AppException, SQLException {
 
         metricsConfig.statsDClient().incrementCounter("Adding_attachments");
-        String fileName = file.getOriginalFilename();
-        String header = req.getHeader("Authorization");
-        logger.info(fileName);
-        logger.info(" -------------------------------- ");
         if (file.isEmpty()) {
             JsonObject entity = new JsonObject();
             entity.addProperty("Error","Please attach one file.");

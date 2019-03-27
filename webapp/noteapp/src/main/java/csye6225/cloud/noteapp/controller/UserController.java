@@ -35,7 +35,7 @@ public class UserController {
     @PostMapping(value = "/user/register")
     public ResponseEntity<Object> createUser(@Valid @RequestBody User user) throws AppException{
 
-        metricsConfig.statsDClient().incrementCounter("create user");
+        metricsConfig.statsDClient().incrementCounter("Create_user");
         Matcher matcher = email_pattern.matcher(user.getEmail());
         boolean isEmail = matcher.find();
 
@@ -93,7 +93,7 @@ public class UserController {
 
     @GetMapping("/")
     public String getTime(){
-        metricsConfig.statsDClient().incrementCounter("get time");
+        metricsConfig.statsDClient().incrementCounter("Get_time");
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String date = timestamp.toString();
         JsonObject entity = new JsonObject();

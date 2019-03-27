@@ -43,7 +43,7 @@ public class AttachmentService {
 
     public String createAttachment(MultipartFile file, String name, String noteid) throws AppException {
         try {
-            logger.info("Creating attachment with multipart file");
+            logger.info(" Creating attachment with multipart file ");
             Notes nt = notesService.findNotesById(noteid);
             if (nt != null && nt.getUser_id().equalsIgnoreCase(name)) {
                 Attachment attachment = new Attachment();
@@ -65,13 +65,14 @@ public class AttachmentService {
             }
         }
         catch (IOException exc){
+            logger.error("Error in creating attachment : ",exc);
             throw new AppException("IOException");
         }
     }
 
     public String updateAttachment(MultipartFile file, Notes note, String attachmentid) throws AppException {
         try {
-            logger.info("Updating attachment ");
+            logger.info(" Updating attachment ");
             for (Attachment a:note.getAttachments()) {
                 if(a.getAttachment_id().equalsIgnoreCase(attachmentid)) {
                     String mimeType = file.getContentType();
@@ -91,12 +92,13 @@ public class AttachmentService {
             return null;
         }
         catch (IOException exc){
+            logger.error("Error in updating attachment : ",exc);
             throw new AppException("IOException");
         }
     }
 
     public String updateCloudAttachment(MultipartFile file, Notes note, String attachmentid){
-        logger.info("Updating cloud attachment");
+        logger.info(" Updating cloud attachment ");
         for (Attachment a:note.getAttachments()) {
             if(a.getAttachment_id().equalsIgnoreCase(attachmentid)) {
 
@@ -110,7 +112,7 @@ public class AttachmentService {
     }
 
     public int deleteAttachment(Notes note, String attachmentid) {
-        logger.info("Deleting the attachement");
+        logger.info(" Deleting the attachement ");
         Attachment attach = null;
         for (Attachment a:note.getAttachments()) {
             if(a.getAttachment_id().equalsIgnoreCase(attachmentid)){

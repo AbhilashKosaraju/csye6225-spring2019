@@ -47,18 +47,43 @@ public class AmazonClient {
                 .build();
     }
 
-    private File convertMultiPartToFile(MultipartFile file) throws IOException {
+    private File convertMultiPartToFile(MultipartFile file1) throws IOException {
         try {
             logger.info(" Converting Multipart file to a file ");
-            File convFile = new File(file.getOriginalFilename());
-            convFile.mkdir();
-            convFile.setReadable(true, false);
-            convFile.setWritable(true, false);
-            convFile.createNewFile();
-            FileOutputStream fos = new FileOutputStream(convFile);
-            fos.write(file.getBytes());
+            File file = new File(file1.getOriginalFilename());
+            if(file.exists())
+            {
+                //Setting execute permission for owner only
+
+                boolean result = file.setExecutable(true);
+
+                logger.info("Is execute permission for owner set successfully? "+result);
+            }
+            else
+            {
+                logger.info("Sorry...File doesn't exist.");
+            }
+
+            if(file.exists())
+            {
+                //Setting execute permission for all
+
+                boolean result = file.setExecutable(true, false);
+
+                logger.info("Is execute permission for all set successfully? "+result);
+            }
+            else
+            {
+                logger.info("Sorry...File doesn't exist.");
+            }
+            file.mkdir();
+            file.setReadable(true, false);
+            file.setWritable(true, false);
+            file.createNewFile();
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(file1.getBytes());
             fos.close();
-            return convFile;
+            return file;
         } catch (IOException e) {
             logger.error("Error in converting file : "+e);
             throw new IOException("Error converting file : ",e);

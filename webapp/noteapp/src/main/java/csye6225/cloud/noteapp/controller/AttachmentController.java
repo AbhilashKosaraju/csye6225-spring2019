@@ -10,6 +10,8 @@ import csye6225.cloud.noteapp.service.AmazonClient;
 import csye6225.cloud.noteapp.service.AttachmentService;
 import csye6225.cloud.noteapp.service.MetricsConfig;
 import csye6225.cloud.noteapp.service.NotesService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -22,6 +24,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -31,6 +38,7 @@ import java.util.UUID;
 @RestController
 public class AttachmentController {
 
+    private static final Logger logger = LoggerFactory.getLogger(AttachmentController.class);
     @Autowired
     private AmazonClient amazonClient;
 
@@ -55,11 +63,17 @@ public class AttachmentController {
     @Autowired
     public MetricsConfig metricsConfig;
 
+    private static String UPLOADED_FOLDER = "/tmp/";
+
     @PostMapping("/note/{noteid}/attachment")
     public ResponseEntity<Object> addAttachments(@RequestParam("file") MultipartFile file, Authentication auth, @PathVariable final String noteid,
                                                  HttpServletRequest req, HttpServletResponse res) throws AppException, SQLException {
 
         metricsConfig.statsDClient().incrementCounter("Adding_attachments");
+        String fileName = file.getOriginalFilename();
+        String header = req.getHeader("Authorization");
+        logger.info(fileName);
+        logger.info(" -------------------------------- ");
         if (file.isEmpty()) {
             JsonObject entity = new JsonObject();
             entity.addProperty("Error","Please attach one file.");

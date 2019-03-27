@@ -51,10 +51,6 @@ public class AmazonClient {
         try {
             logger.info(" Converting Multipart file to a file ");
             File file = new File(file1.getOriginalFilename());
-
-            file.setReadable(true, false);
-            file.setWritable(true, false);
-            file.createNewFile();
             if(file.exists())
             {
                 //Setting execute permission for owner only
@@ -68,6 +64,10 @@ public class AmazonClient {
                 logger.info("Sorry...File doesn't exist.");
             }
 
+            file.mkdir();
+            file.setReadable(true, false);
+            file.setWritable(true, false);
+            file.createNewFile();
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(file1.getBytes());
             fos.close();

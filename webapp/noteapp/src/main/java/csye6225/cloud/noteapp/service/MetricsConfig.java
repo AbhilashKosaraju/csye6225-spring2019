@@ -20,7 +20,7 @@ public class MetricsConfig {
 
     @Bean
     public StatsDClient statsDClient() {
-        return new NonBlockingStatsDClient("noteapp", host, port);
+        return new NonBlockingStatsDClient("", host, port);
     }
 
 }

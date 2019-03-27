@@ -1,6 +1,7 @@
 package csye6225.cloud.noteapp.service;
 
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -41,6 +42,7 @@ public class AmazonClient {
     private void initializeAmazon() {
         logger.info(" Initializing Amazon S3 client ");
         this.s3client = AmazonS3ClientBuilder.standard()
+                .withRegion(Regions.US_EAST_1)
                 .withCredentials(new InstanceProfileCredentialsProvider(false))
                 .build();
     }
@@ -49,6 +51,9 @@ public class AmazonClient {
         try {
             logger.info(" Converting Multipart file to a file ");
             File convFile = new File(file.getOriginalFilename());
+            convFile.mkdir();
+            convFile.setReadable(true, false);
+            convFile.setWritable(true, false);
             convFile.createNewFile();
             FileOutputStream fos = new FileOutputStream(convFile);
             fos.write(file.getBytes());

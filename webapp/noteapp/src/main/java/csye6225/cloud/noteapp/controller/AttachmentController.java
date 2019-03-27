@@ -10,9 +10,6 @@ import csye6225.cloud.noteapp.service.AmazonClient;
 import csye6225.cloud.noteapp.service.AttachmentService;
 import csye6225.cloud.noteapp.service.MetricsConfig;
 import csye6225.cloud.noteapp.service.NotesService;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -28,15 +25,12 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import java.io.IOException;
-import java.util.List;
+import java.util.Date;
 import java.util.UUID;
 
 @RestController
 public class AttachmentController {
 
-    private static final Logger logger = LoggerFactory.getLogger(AttachmentController.class);
     @Autowired
     private AmazonClient amazonClient;
 
@@ -61,8 +55,6 @@ public class AttachmentController {
     @Autowired
     public MetricsConfig metricsConfig;
 
-    private static String UPLOADED_FOLDER = "/tmp/";
-
     @PostMapping("/note/{noteid}/attachment")
     public ResponseEntity<Object> addAttachments(@RequestParam("file") MultipartFile file, Authentication auth, @PathVariable final String noteid,
                                                  HttpServletRequest req, HttpServletResponse res) throws AppException, SQLException {
@@ -82,15 +74,15 @@ public class AttachmentController {
         }
 
         UUID uuid= UUID.randomUUID();
-        /*Connection conn = amazonClient.getRemoteConnection();
+        Connection conn = amazonClient.getRemoteConnection();
         Statement setupStatement = conn.createStatement();
-        String createTable = "CREATE TABLE IF NOT EXISTS attachmentdata ( attachmentid varchar(100) NOT NULL, file_size varchar (50), PRIMARY KEY(attachmentid));";
-        String insertRow1 = "INSERT INTO attachmentdata (attachmentid,file_size) VALUES ('"+ uuid.toString() +"','"+ file.getSize() +"');";
+        String createTable = "CREATE TABLE IF NOT EXISTS csye6225.attachmentdata ( attachmentid varchar(100) NOT NULL, file_size varchar (50), PRIMARY KEY(attachmentid));";
+        String insertRow1 = "INSERT INTO csye6225.attachmentdata (attachmentid,file_size) VALUES ('"+ uuid.toString() +"','"+ file.getSize() +"');";
 
         setupStatement.addBatch(createTable);
         setupStatement.addBatch(insertRow1);
         setupStatement.executeBatch();
-        setupStatement.close();*/
+        setupStatement.close();
 
         attach = amazonClient.uploadFile(file,uuid.toString());
         Attachment att = new Attachment();

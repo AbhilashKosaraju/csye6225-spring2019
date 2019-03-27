@@ -47,7 +47,7 @@ public class AmazonClient {
 
     private File convertMultiPartToFile(MultipartFile file) throws IOException {
         try {
-            logger.info(" Converting Multipart file to a file ");
+            logger.info("Converting Multipart file to a file ");
             File convFile = new File(System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + file.getOriginalFilename());
             file.transferTo(convFile);
             return convFile;

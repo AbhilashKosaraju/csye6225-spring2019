@@ -44,12 +44,11 @@ public class ResetpwController {
     public MetricsConfig metricsConfig;
 
     @PostMapping(value = "/reset")
-    public ResponseEntity<Object> resetPassword(@Valid @RequestBody User user) throws AppException {
+    public ResponseEntity<Object> resetPassword(@Valid @RequestBody String email) throws AppException {
 
         metricsConfig.statsDClient().incrementCounter("ResetPassword_API");
         logger.info("ResetPassword called");
         JsonObject jsonObject = new JsonObject();
-        String email = user.getEmail();
         User up = userRepository.findUserByEmail(email);
         if(up != null)
         {
@@ -58,22 +57,23 @@ public class ResetpwController {
                     .build();
             List<Topic> topics = snsClient.listTopics().getTopics();
 
+            logger.info("all topics : " + topics.isEmpty());
             for(Topic topic: topics)
             {
                 if(topic.getTopicArn().endsWith("password_reset")){
-                    System.out.print(user.getEmail());
-                    PublishRequest req = new PublishRequest(topic.getTopicArn(),user.getEmail());
+                    logger.info("inside topic : " + topic.toString());
+                    PublishRequest req = new PublishRequest(topic.getTopicArn(),email);
                     snsClient.publish(req);
+                    logger.info("published topic : " + req.toString());
                     break;
                 }
             }
             jsonObject.addProperty("message","Successful");
+            jsonObject.addProperty("Success","Password reset instruction sent.");
         }
         else{
             jsonObject.addProperty("message","User not found");
         }
-
-        jsonObject.addProperty("Success","Password reset instruction sent.");
         return ResponseEntity.status(201).body(jsonObject.toString());
     }
 }

@@ -11,7 +11,6 @@ import com.amazonaws.services.sns.model.Topic;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import csye6225.cloud.noteapp.exception.AppException;
-import csye6225.cloud.noteapp.model.ResetUser;
 import csye6225.cloud.noteapp.model.User;
 import csye6225.cloud.noteapp.repository.UserRepository;
 import csye6225.cloud.noteapp.service.AmazonClient;
@@ -49,12 +48,12 @@ public class ResetpwController {
     private UserService userService;
 
     @PostMapping(value = "/reset")
-    public ResponseEntity<Object> resetPassword(@Valid @RequestBody User user) throws AppException {
+    public ResponseEntity<Object> resetPassword(@Valid @RequestBody String email) throws AppException {
 
         metricsConfig.statsDClient().incrementCounter("ResetPassword_API");
         logger.info("ResetPassword called");
         JsonObject jsonObject = new JsonObject();
-        User up = userService.findUserByEmail(user.getEmail());
+        User up = userService.findUserByEmail(email);
         if(up != null)
         {
             AmazonSNS snsClient = AmazonSNSAsyncClientBuilder.standard()
@@ -67,7 +66,7 @@ public class ResetpwController {
             {
                 if(topic.getTopicArn().endsWith("password_reset")){
                     logger.info("inside topic : " + topic.toString());
-                    PublishRequest req = new PublishRequest(topic.getTopicArn(),user.getEmail());
+                    PublishRequest req = new PublishRequest(topic.getTopicArn(),email);
                     snsClient.publish(req);
                     logger.info("published topic : " + req.toString());
                     break;

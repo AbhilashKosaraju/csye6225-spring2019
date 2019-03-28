@@ -57,12 +57,14 @@ public class ResetpwController {
                     .build();
             List<Topic> topics = snsClient.listTopics().getTopics();
 
+            logger.info("all topics : " + topics.isEmpty());
             for(Topic topic: topics)
             {
                 if(topic.getTopicArn().endsWith("password_reset")){
-                    logger.info(email);
+                    logger.info("inside topic : " + topic.toString());
                     PublishRequest req = new PublishRequest(topic.getTopicArn(),email);
                     snsClient.publish(req);
+                    logger.info("published topic : " + req.toString());
                     break;
                 }
             }

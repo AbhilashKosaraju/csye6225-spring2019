@@ -49,12 +49,12 @@ public class ResetpwController {
     private UserService userService;
 
     @PostMapping(value = "/reset")
-    public ResponseEntity<Object> resetPassword(@Valid @RequestBody User user) throws AppException {
+    public ResponseEntity<Object> resetPassword(@Valid @RequestBody ResetUser user) throws AppException {
 
         metricsConfig.statsDClient().incrementCounter("ResetPassword_API");
         logger.info("ResetPassword called");
         JsonObject jsonObject = new JsonObject();
-        User up = userService.findUserByEmail(user.getEmail());
+        User up = userRepository.findUserByEmail(user.getEmail());
         if(up != null)
         {
             AmazonSNS snsClient = AmazonSNSAsyncClientBuilder.standard()

@@ -3,7 +3,7 @@ package csye6225.cloud.noteapp.model;
 import javax.persistence.Entity;
 
 @Entity
-public class ResetUser {
+public class resetUser {
     private String email;
 
     public String getEmail() {

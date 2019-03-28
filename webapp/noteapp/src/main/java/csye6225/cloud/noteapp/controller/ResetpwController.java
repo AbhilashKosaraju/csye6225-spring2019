@@ -11,7 +11,6 @@ import com.amazonaws.services.sns.model.Topic;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import csye6225.cloud.noteapp.exception.AppException;
-import csye6225.cloud.noteapp.model.ResetUser;
 import csye6225.cloud.noteapp.model.User;
 import csye6225.cloud.noteapp.repository.UserRepository;
 import csye6225.cloud.noteapp.service.AmazonClient;

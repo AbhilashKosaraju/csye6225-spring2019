@@ -30,3 +30,6 @@ server:
 logging:
   file: noteapp.log
   path: /opt/tomcat/logs/
+
+file:
+  upload-dir: ./uploads

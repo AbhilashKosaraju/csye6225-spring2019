@@ -55,4 +55,3 @@ jobs:
           command: |
             echo "Hello CodeDeploy"
             aws deploy create-deployment --application-name csye6225-webapp --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name  csye6225-webapp-deployment  --s3-location bucket=${bucket},bundleType=zip,key=csye6225-web-app-${CIRCLE_BUILD_NUM}.zip --region us-east-1
-

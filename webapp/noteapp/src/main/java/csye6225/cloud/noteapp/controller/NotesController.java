@@ -51,7 +51,7 @@ public class NotesController {
 
     @PostMapping(value= "/note")
     public ResponseEntity<Object> createNote(@Valid @RequestBody Notes note,Authentication auth) throws AppException {
-        metricsConfig.statsDClient().incrementCounter("create note");
+        metricsConfig.statsDClient().incrementCounter("Create_Note");
         String title = note.getTitle();
         String content = note.getContent();
         if(title != null && content != null) {
@@ -62,7 +62,7 @@ public class NotesController {
                 entity.addProperty("NoteID", nt.getNote_id());
                 return ResponseEntity.status(201).body(entity.toString());
             }else{
-                metricsConfig.statsDClient().decrementCounter("create note");
+                metricsConfig.statsDClient().decrementCounter("Create_Note");
                 JsonObject entity = new JsonObject();
                 entity.addProperty("Error","A note with same title already exists for this user. Please create another or update old one.");
                 return ResponseEntity.badRequest().body(entity.toString());
@@ -77,7 +77,7 @@ public class NotesController {
 
     @GetMapping("/note/{id}")
     public ResponseEntity<Object> getNote(@PathVariable final String id,Authentication auth){
-        metricsConfig.statsDClient().incrementCounter("get note");
+        metricsConfig.statsDClient().incrementCounter("Get_note");
         Notes note = notesService.findNotesById(id);
         if(note != null)
             if(auth.getName().equalsIgnoreCase(note.getUser_id())) {
@@ -96,12 +96,12 @@ public class NotesController {
 
     @PutMapping("/note/{noteId}")
     public ResponseEntity<Object> updateNote(@RequestBody Notes note,@PathVariable final String noteId, Authentication auth){
-        metricsConfig.statsDClient().incrementCounter("update note");
+        metricsConfig.statsDClient().incrementCounter("Update_note");
         Notes userNotes = notesService.findNotesById(noteId);
         Notes updated = null;
         if (userNotes == null) {
             JsonObject entity = new JsonObject();
-            metricsConfig.statsDClient().decrementCounter("update note");
+            metricsConfig.statsDClient().decrementCounter("Update_note");
             entity.addProperty("Error", "Note not found");
             return ResponseEntity.status(404).body(entity.toString());
         }
@@ -131,7 +131,7 @@ public class NotesController {
 
     @DeleteMapping("/note/{id}")
     public ResponseEntity<Object> deleteNote( @PathVariable final String id, Authentication auth){
-        metricsConfig.statsDClient().incrementCounter("delete note");
+        metricsConfig.statsDClient().incrementCounter("Delete_note");
         if(id == null){
             JsonObject entity = new JsonObject();
             metricsConfig.statsDClient().decrementCounter("delete note");

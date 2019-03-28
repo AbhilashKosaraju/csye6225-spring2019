@@ -29,6 +29,8 @@
 
 		"ImageID": {
 			"Type": "String"
+		},"cdm": {
+			"Type": "String"
 		},
 
 		"CDARN": {
@@ -224,6 +226,8 @@
 				"Path": "/"
 			}
 		},
+                  
+
 		"LogRolePolicy": {
 			"Type": "AWS::IAM::ManagedPolicy",
 			"Properties": {
@@ -255,6 +259,7 @@
 				"Roles": [{
 					"Ref": "codeDeployRole"
 				}]
+                               
 			}
 		},
 		"InstanceProfile": {
@@ -323,6 +328,10 @@
 				"Path": "/"
 			}
 		},
+
+                
+				
+
 		"codeDeployApp": {
 			"Type": "AWS::CodeDeploy::Application",
 			"Properties": {
@@ -375,14 +384,22 @@
 				"AttributeDefinitions": [{
 					"AttributeName": "id",
 					"AttributeType": "S"
-				}],
+				}
+				],
 				"KeySchema": [{
 					"AttributeName": "id",
 					"KeyType": "HASH"
-				}],
+				}
+
+
+                                ],
 				"ProvisionedThroughput": {
 					"ReadCapacityUnits": "5",
 					"WriteCapacityUnits": "5"
+				},
+				"TimeToLiveSpecification": {
+		  	 		"AttributeName" : "tokenTTL",
+					"Enabled": "true"
 				}
 			}
 		},
@@ -399,6 +416,10 @@
 				]
 			}
 		},
+               
+
+             
+
 		"myRDSInstance": {
 			"Type": "AWS::RDS::DBInstance",
 			"Properties": {

@@ -47,12 +47,9 @@ public class AmazonClient {
 
     private File convertMultiPartToFile(MultipartFile file) throws IOException {
         try {
-            logger.info(" Converting Multipart file to a file ");
-            File convFile = new File(file.getOriginalFilename());
-            convFile.createNewFile();
-            FileOutputStream fos = new FileOutputStream(convFile);
-            fos.write(file.getBytes());
-            fos.close();
+            logger.info("Converting Multipart file to a file ");
+            File convFile = new File(System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + file.getOriginalFilename());
+            file.transferTo(convFile);
             return convFile;
         } catch (IOException e) {
             logger.error("Error in converting file : "+e);
@@ -74,7 +71,7 @@ public class AmazonClient {
             String fileName = uuid + "-" + multipartFile.getOriginalFilename();
             fileUrl = endpointUrl + "/" + bucketName + "/" + fileName;
             uploadFileTos3bucket(fileName, file);
-            //file.delete();
+            file.delete();
         } catch (Exception e) {
             logger.error("Error in uploading multipart file : ",e);
             e.printStackTrace();

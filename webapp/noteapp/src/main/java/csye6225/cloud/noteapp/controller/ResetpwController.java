@@ -69,12 +69,11 @@ public class ResetpwController {
                 }
             }
             jsonObject.addProperty("message","Successful");
+            jsonObject.addProperty("Success","Password reset instruction sent.");
         }
         else{
             jsonObject.addProperty("message","User not found");
         }
-
-        jsonObject.addProperty("Success","Password reset instruction sent.");
         return ResponseEntity.status(201).body(jsonObject.toString());
     }
 }

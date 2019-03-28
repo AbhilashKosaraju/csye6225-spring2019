@@ -44,12 +44,11 @@ public class ResetpwController {
     public MetricsConfig metricsConfig;
 
     @PostMapping(value = "/reset")
-    public ResponseEntity<Object> resetPassword(@Valid @RequestBody User user) throws AppException {
+    public ResponseEntity<Object> resetPassword(@Valid @RequestBody String email) throws AppException {
 
         metricsConfig.statsDClient().incrementCounter("ResetPassword_API");
         logger.info("ResetPassword called");
         JsonObject jsonObject = new JsonObject();
-        String email = user.getEmail();
         User up = userRepository.findUserByEmail(email);
         if(up != null)
         {
@@ -61,8 +60,8 @@ public class ResetpwController {
             for(Topic topic: topics)
             {
                 if(topic.getTopicArn().endsWith("password_reset")){
-                    System.out.print(user.getEmail());
-                    PublishRequest req = new PublishRequest(topic.getTopicArn(),user.getEmail());
+                    logger.info(email);
+                    PublishRequest req = new PublishRequest(topic.getTopicArn(),email);
                     snsClient.publish(req);
                     break;
                 }

@@ -15,6 +15,7 @@ import csye6225.cloud.noteapp.model.User;
 import csye6225.cloud.noteapp.repository.UserRepository;
 import csye6225.cloud.noteapp.service.AmazonClient;
 import csye6225.cloud.noteapp.service.MetricsConfig;
+import csye6225.cloud.noteapp.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,13 +44,16 @@ public class ResetpwController {
     @Autowired
     public MetricsConfig metricsConfig;
 
+    @Autowired
+    private UserService userService;
+
     @PostMapping(value = "/reset")
     public ResponseEntity<Object> resetPassword(@Valid @RequestBody String email) throws AppException {
 
         metricsConfig.statsDClient().incrementCounter("ResetPassword_API");
         logger.info("ResetPassword called");
         JsonObject jsonObject = new JsonObject();
-        User up = userRepository.findUserByEmail(email);
+        User up = userService.findUserByEmail(email);
         if(up != null)
         {
             AmazonSNS snsClient = AmazonSNSAsyncClientBuilder.standard()

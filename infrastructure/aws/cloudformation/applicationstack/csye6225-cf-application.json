@@ -226,29 +226,7 @@
 				"Path": "/"
 			}
 		},
-                   "SNSPolicy": {
-			"Type": "AWS::IAM::ManagedPolicy",
-                        "Properties":{
-						"ManagedPolicyName": "Ec2sns",
-						"PolicyDocument": {
-
-							"Version": "2012-10-17",
-							"Statement": [{
-
-								"Effect": "Allow",
-								"Action": "sns:*",
-								"Resource": "*"
-							}]
-							},
-                                                 
-                        			 "Roles": [{
-						"Ref": "codeDeployRole"
-						}],
-                            "Users": [{
-					"Ref": "circleci"
-				}]
-						}
-		},
+                  
 
 		"LogRolePolicy": {
 			"Type": "AWS::IAM::ManagedPolicy",
@@ -351,26 +329,7 @@
 			}
 		},
 
-                "lambdaServiceRole": {
-			"Type": "AWS::IAM::Role",
-			"Properties": {
-				"RoleName": "lambda-sns-execution-role",
-				"AssumeRolePolicyDocument": {
-					"Version": "2012-10-17",
-					"Statement": [{
-						"Effect": "Allow",
-						"Principal": {
-							"Service": "lambda.amazonaws.com"
-						},
-						"Action": ["sts:AssumeRole"]
-					}]
-				},
-				"ManagedPolicyArns": ["arn:aws:iam::aws:policy/AmazonSESFullAccess","arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess", "arn:aws:iam::aws:policy/AmazonSNSFullAccess"]
-				
-
-
-			}
-		},
+                
 				
 
 		"codeDeployApp": {
@@ -457,45 +416,9 @@
 				]
 			}
 		},
-               "snsTopic" : {
-                        "Type" : "AWS::SNS::Topic",
-                        "Properties" : {
-                                 "DisplayName" : "password_reset",
-                                 "TopicName" : "password_reset",
-                                 "Subscription" :  [
-				{
-				  "Endpoint": {
-				    "Fn::GetAtt": [ "lambdafunction", "Arn" ]
-				  },
-				  "Protocol": "lambda"
-				}
-			      ]
-                  }
-                 },
+               
 
-             "lambdafunction" : {
-                        "Type" : "AWS::Lambda::Function",
-                        "Properties" : {
-                                        "Code" : {
-                           "S3Bucket":{
-						"Ref": "cdm"
-					},
-                           "S3Key":"notelambda.zip"
-                                  },
-                                        "Description" : "Csye6225 Lambda Function",
-                                        "FunctionName" : "NoteLambda",
-                                        "Handler" : "notelambda.NoteLambda::handleRequest",
-                                        "MemorySize" : "128",
-                                        "Role" :  {
-					"Fn::GetAtt": [
-						"lambdaServiceRole",
-						"Arn"
-					]
-				},
-                                        "Runtime" : "java8"
- 
-                  }
-                 },
+             
 
 		"myRDSInstance": {
 			"Type": "AWS::RDS::DBInstance",

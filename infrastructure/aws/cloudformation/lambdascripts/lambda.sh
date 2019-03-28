@@ -16,6 +16,8 @@ DOMAIN_NAME1=$(aws route53 list-hosted-zones --query HostedZones[0].Name --outpu
 CD_DOMAIN="code-deploy."${DOMAIN_NAME1%?}
 echo $CD_DOMAIN
 
+DOMAINNAME2=${DOMAIN_NAME1%?}
+echo $DOMAINNAME2
 
 AccountId=$(aws iam get-user|python -c "import json as j,sys;o=j.load(sys.stdin);print o['User']['Arn'].split(':')[4]")
 echo "AccountId: $AccountId"
@@ -23,7 +25,7 @@ echo "AccountId: $AccountId"
 SNSTOPIC_ARN="arn:aws:sns:us-east-1:$AccountId:SNSTopicResetPassword"
 echo "SNSTOPIC_ARN: $SNSTOPIC_ARN"
 
-createres=$(aws cloudformation create-stack  --stack-name $sn --capabilities CAPABILITY_NAMED_IAM --template-body file://lambdafunction.json  --parameters ParameterKey=Bucket,ParameterValue=$CD_DOMAIN ParameterKey=SNSTOPICARN,ParameterValue=$SNSTOPIC_ARN)
+createres=$(aws cloudformation create-stack  --stack-name $sn --capabilities CAPABILITY_NAMED_IAM --template-body file://lambdafunction.json  --parameters ParameterKey=Bucket,ParameterValue=$CD_DOMAIN ParameterKey=SNSTOPICARN,ParameterValue=$SNSTOPIC_ARN ParameterKey=DOMAINNAME,ParameterValue=$DOMAINNAME2)
 echo Creating stack "$sn". Please wait...
 resp=$(aws cloudformation wait stack-create-complete --stack-name $sn)
 if [[ -z "$resp" ]]; then

@@ -6,6 +6,9 @@
 	    },
 	    "SNSTOPICARN": {
 	      "Type": "String"
+	    },
+	    "DOMAINNAME": {
+	      "Type": "String"
 	    }
 	  },
 	"Resources":{
@@ -79,7 +82,10 @@
 			"Runtime": "java8",
 			"FunctionName" : "NoteLambda",
 			"MemorySize" : 128,
-			"Timeout": 180
+			"Timeout": 180,
+			"Environment": {"Variables" : {
+           					 "domainName" : { "Ref" : "DOMAINNAME" }
+          				} }
 			
 		  }
 		}

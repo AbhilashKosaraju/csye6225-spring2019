@@ -224,7 +224,7 @@
 				"Path": "/"
 			}
 		},
-"SNSPolicy": {
+                   "SNSPolicy": {
 			"Type": "AWS::IAM::ManagedPolicy",
                         "Properties":{
 						"ManagedPolicyName": "Ec2sns",
@@ -242,7 +242,7 @@
                         			 "Roles": [{
 						"Ref": "codeDeployRole"
 						}],
-"Users": [{
+                            "Users": [{
 					"Ref": "circleci"
 				}]
 						}
@@ -278,10 +278,8 @@
 				"ManagedPolicyName": "LogRolePolicy",
 				"Roles": [{
 					"Ref": "codeDeployRole"
-				}],
-"Users": [{
-					"Ref": "circleci"
 				}]
+                               
 			}
 		},
 		"InstanceProfile": {
@@ -351,7 +349,7 @@
 			}
 		},
 
-"lambdaServiceRole": {
+                "lambdaServiceRole": {
 			"Type": "AWS::IAM::Role",
 			"Properties": {
 				"RoleName": "lambda-sns-execution-role",
@@ -452,14 +450,40 @@
 				"AttributeDefinitions": [{
 					"AttributeName": "id",
 					"AttributeType": "S"
+				},
+				{
+					"AttributeName": "email",
+					"AttributeType": "S"
+				},{
+					"AttributeName": "crt_ts",
+					"AttributeType": "N"
+				},{
+					"AttributeName": "exp_ts",
+					"AttributeType": "N"
 				}],
 				"KeySchema": [{
 					"AttributeName": "id",
 					"KeyType": "HASH"
-				}],
+				},{
+					"AttributeName": "email",
+					"KeyType": "RANGE"
+				},{
+					"AttributeName": "crt_ts",
+					"KeyType": "RANGE"
+				},{
+					"AttributeName": "exp_ts",
+					"KeyType": "RANGE"
+				}
+
+
+                                ],
 				"ProvisionedThroughput": {
 					"ReadCapacityUnits": "5",
 					"WriteCapacityUnits": "5"
+				},
+				"TimeToLiveSpecification": {
+		  	 		"AttributeName" : "exp_ts",
+					"Enabled": "true"
 				}
 			}
 		},
@@ -476,13 +500,34 @@
 				]
 			}
 		},
-"snsTopic" : {
-  "Type" : "AWS::SNS::Topic",
-  "Properties" : {
-    "DisplayName" : "password_reset",
-    "TopicName" : "password_reset"
-  }
-},
+               "snsTopic" : {
+                        "Type" : "AWS::SNS::Topic",
+                        "Properties" : {
+                                 "DisplayName" : "password_reset",
+                                 "TopicName" : "password_reset",
+                                 "Subscription" : {
+					"Fn::GetAtt": [
+						"lambdafunction",
+						"Arn"
+					]
+				}
+                  }
+                 },
+
+             "lambdafunction" : {
+                        "Type" : "AWS::Lambda::Function",
+                        "Properties" : {
+                                        "Code" : "",
+                                        "Description" : "Csye6225 Lambda Function",
+                                        "FunctionName" : "NoteLambda",
+                                        "Handler" : "notelambda.NoteLambda::handleRequest",
+                                        "MemorySize" : "128",
+                                        "Role" : [{ "Ref": "lambdaServiceRole" }],
+                                        "Runtime" : "java8"
+ 
+                  }
+                 },
+
 		"myRDSInstance": {
 			"Type": "AWS::RDS::DBInstance",
 			"Properties": {

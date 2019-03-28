@@ -363,35 +363,8 @@
 						"Action": ["sts:AssumeRole"]
 					}]
 				},
-				"ManagedPolicyArns": ["arn:aws:iam::aws:policy/AmazonSESFullAccess"],
-				"Path": "/",
-				"Policies":
-
-				[{
-					"PolicyName": "lambda_dynamoDB_permissions",
-					"PolicyDocument": {
-						"Version": "2012-10-17",
-						"Statement": [{
-								"Effect": "Allow",
-								"Action": [
-									"logs:CreateLogGroup",
-									"logs:CreateLogStream",
-									"logs:PutLogEvents"
-								],
-								"Resource": "arn:aws:logs:*:*:*"
-							},
-							{
-								"Effect": "Allow",
-								"Action": [
-									"dynamodb:*"
-								],
-								"Resource": [
-									"*"
-								]
-							}
-						]
-					}
-				}]
+				"ManagedPolicyArns": ["arn:aws:iam::aws:policy/AmazonSESFullAccess","arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess", "arn:aws:iam::aws:policy/AmazonSNSFullAccess"],
+				
 
 
 			}
@@ -450,29 +423,11 @@
 				"AttributeDefinitions": [{
 					"AttributeName": "id",
 					"AttributeType": "S"
-				},
-				{
-					"AttributeName": "email",
-					"AttributeType": "S"
-				},{
-					"AttributeName": "crt_ts",
-					"AttributeType": "N"
-				},{
-					"AttributeName": "exp_ts",
-					"AttributeType": "N"
-				}],
+				}
+				],
 				"KeySchema": [{
 					"AttributeName": "id",
 					"KeyType": "HASH"
-				},{
-					"AttributeName": "email",
-					"KeyType": "RANGE"
-				},{
-					"AttributeName": "crt_ts",
-					"KeyType": "RANGE"
-				},{
-					"AttributeName": "exp_ts",
-					"KeyType": "RANGE"
 				}
 
 
@@ -482,7 +437,7 @@
 					"WriteCapacityUnits": "5"
 				},
 				"TimeToLiveSpecification": {
-		  	 		"AttributeName" : "exp_ts",
+		  	 		"AttributeName" : "tokenTTL",
 					"Enabled": "true"
 				}
 			}
@@ -517,12 +472,17 @@
              "lambdafunction" : {
                         "Type" : "AWS::Lambda::Function",
                         "Properties" : {
-                                        "Code" : "",
+                                        "Code" : "notelambda.zip",
                                         "Description" : "Csye6225 Lambda Function",
                                         "FunctionName" : "NoteLambda",
                                         "Handler" : "notelambda.NoteLambda::handleRequest",
                                         "MemorySize" : "128",
-                                        "Role" : [{ "Ref": "lambdaServiceRole" }],
+                                        "Role" :  {
+					"Fn::GetAtt": [
+						"lambdaServiceRole",
+						"Arn"
+					]
+				},
                                         "Runtime" : "java8"
  
                   }

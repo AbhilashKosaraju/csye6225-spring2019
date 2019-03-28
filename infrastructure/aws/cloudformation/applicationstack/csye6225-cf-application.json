@@ -29,6 +29,8 @@
 
 		"ImageID": {
 			"Type": "String"
+		},"cdm": {
+			"Type": "String"
 		},
 
 		"CDARN": {
@@ -363,7 +365,7 @@
 						"Action": ["sts:AssumeRole"]
 					}]
 				},
-				"ManagedPolicyArns": ["arn:aws:iam::aws:policy/AmazonSESFullAccess","arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess", "arn:aws:iam::aws:policy/AmazonSNSFullAccess"],
+				"ManagedPolicyArns": ["arn:aws:iam::aws:policy/AmazonSESFullAccess","arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess", "arn:aws:iam::aws:policy/AmazonSNSFullAccess"]
 				
 
 
@@ -460,19 +462,26 @@
                         "Properties" : {
                                  "DisplayName" : "password_reset",
                                  "TopicName" : "password_reset",
-                                 "Subscription" : {
-					"Fn::GetAtt": [
-						"lambdafunction",
-						"Arn"
-					]
+                                 "Subscription" :  [
+				{
+				  "Endpoint": {
+				    "Fn::GetAtt": [ "lambdafunction", "Arn" ]
+				  },
+				  "Protocol": "lambda"
 				}
+			      ]
                   }
                  },
 
              "lambdafunction" : {
                         "Type" : "AWS::Lambda::Function",
                         "Properties" : {
-                                        "Code" : "notelambda.zip",
+                                        "Code" : {
+                           "S3Bucket":{
+						"Ref": "cdm"
+					},
+                           "S3Key":"notelambda.zip"
+                                  },
                                         "Description" : "Csye6225 Lambda Function",
                                         "FunctionName" : "NoteLambda",
                                         "Handler" : "notelambda.NoteLambda::handleRequest",

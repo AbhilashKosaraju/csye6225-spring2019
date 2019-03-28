@@ -39,7 +39,7 @@ public class AmazonClient {
 
     @PostConstruct
     private void initializeAmazon() {
-        logger.info("Initializing Amazon S3 client");
+        logger.info(" Initializing Amazon S3 client ");
         this.s3client = AmazonS3ClientBuilder.standard()
                 .withCredentials(new InstanceProfileCredentialsProvider(false))
                 .build();
@@ -47,38 +47,33 @@ public class AmazonClient {
 
     private File convertMultiPartToFile(MultipartFile file) throws IOException {
         try {
-            logger.info("Converting Multipart file to a file");
-            File convFile = new File(file.getOriginalFilename());
-            convFile.createNewFile();
-            FileOutputStream fos = new FileOutputStream(convFile);
-            fos.write(file.getBytes());
-            fos.close();
+            logger.info("Converting Multipart file to a file ");
+            File convFile = new File(System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + file.getOriginalFilename());
+            file.transferTo(convFile);
             return convFile;
         } catch (IOException e) {
-            logger.error("Error in converting file", e);
-            throw new IOException("Error converting file", e);
+            logger.error("Error in converting file : "+e);
+            throw new IOException("Error converting file : ",e);
         }
     }
 
     private void uploadFileTos3bucket(String fileName, File file) {
         logger.info("Uploading file to s3 bucket");
-        System.out.println("Uploading file started ");
         s3client.putObject(new PutObjectRequest(bucketName, fileName, file).withCannedAcl(CannedAccessControlList.PublicRead));
-        System.out.println("Uploading file done");
     }
 
     public String uploadFile(MultipartFile multipartFile, String uuid) {
 
         String fileUrl = "";
         try {
-            logger.info("Uploading multipart file");
+            logger.info("Uploading multipart file ");
             File file = convertMultiPartToFile(multipartFile);
             String fileName = uuid + "-" + multipartFile.getOriginalFilename();
             fileUrl = endpointUrl + "/" + bucketName + "/" + fileName;
             uploadFileTos3bucket(fileName, file);
-            //file.delete();
+            file.delete();
         } catch (Exception e) {
-            logger.error("Error in uploading multipart file", e);
+            logger.error("Error in uploading multipart file : ",e);
             e.printStackTrace();
         }
         return fileUrl;
@@ -88,23 +83,23 @@ public class AmazonClient {
         logger.info("Deleting file from url "+fileUrl);
         String fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
         s3client.deleteObject(new DeleteObjectRequest(bucketName, fileName));
-        return "Successfully deleted";
+        return " Successfully deleted file from S3 bucket ";
     }
 
     public Connection getRemoteConnection() {
             try {
-                logger.info("Getting remote connection");
+                logger.info(" Getting remote connection ");
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 String jdbcUrl = rdsUrl + "?user=" + username + "&password=" + password;
                 Connection con = DriverManager.getConnection(jdbcUrl);
                 return con;
             }
             catch (ClassNotFoundException e) {
-                logger.error("Class not found exception in getting remote connection", e);
+                logger.error("Class not found exception in getting remote connection : ",e);
                 e.printStackTrace();
             }
             catch (SQLException e) {
-                logger.error("SQL Exception in getting remote connection", e);
+                logger.error("SQL Exception in getting remote connection : ",e);
                 e.printStackTrace();
             }
 

@@ -18,6 +18,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -53,48 +56,46 @@ public class AttachmentController {
     public MetricsConfig metricsConfig;
 
     @PostMapping("/note/{noteid}/attachment")
-    public ResponseEntity<Object> addAttachments(@RequestParam("file") MultipartFile file, Authentication auth, @PathVariable final String noteid) throws AppException, SQLException {
-        metricsConfig.statsDClient().incrementCounter("create attachment");
+    public ResponseEntity<Object> addAttachments(@RequestParam("file") MultipartFile file, Authentication auth, @PathVariable final String noteid,
+                                                 HttpServletRequest req, HttpServletResponse res) throws AppException, SQLException {
+
+        metricsConfig.statsDClient().incrementCounter("Adding_attachments");
         if (file.isEmpty()) {
             JsonObject entity = new JsonObject();
             entity.addProperty("Error","Please attach one file.");
             return ResponseEntity.badRequest().body(entity.toString());
         }
         String attach = null;
-        System.out.println(environment);
         Notes note = ns.findNotesById(noteid);
         if(note == null) {
             JsonObject entity = new JsonObject();
             entity.addProperty("Error","Note not found.Please enter a valid note id");
             return ResponseEntity.badRequest().body(entity.toString());
         }
-        if(profile.equalsIgnoreCase("dev")) {
 
-            UUID uuid= UUID.randomUUID();
-            Connection conn = amazonClient.getRemoteConnection();
-            Statement setupStatement = conn.createStatement();
-            String createTable = "CREATE TABLE IF NOT EXISTS attachmentdata ( attachmentid varchar(100) NOT NULL, file_size varchar (50), PRIMARY KEY(attachmentid));";
-            String insertRow1 = "INSERT INTO attachmentdata (attachmentid,file_size) VALUES ('"+ uuid.toString() +"','"+ file.getSize() +"');";
+        UUID uuid= UUID.randomUUID();
+        Connection conn = amazonClient.getRemoteConnection();
+        Statement setupStatement = conn.createStatement();
+        String createTable = "CREATE TABLE IF NOT EXISTS csye6225.attachmentdata ( attachmentid varchar(100) NOT NULL, file_size varchar (50), PRIMARY KEY(attachmentid));";
+        String insertRow1 = "INSERT INTO csye6225.attachmentdata (attachmentid,file_size) VALUES ('"+ uuid.toString() +"','"+ file.getSize() +"');";
 
-            setupStatement.addBatch(createTable);
-            setupStatement.addBatch(insertRow1);
-            setupStatement.executeBatch();
-            setupStatement.close();
+        setupStatement.addBatch(createTable);
+        setupStatement.addBatch(insertRow1);
+        setupStatement.executeBatch();
+        setupStatement.close();
 
-            attach = amazonClient.uploadFile(file,uuid.toString());
-            Attachment att = new Attachment();
-            att.setPath(attach);
-            att.setAttachment_id(uuid.toString());
-            note.getAttachments().add(att);
-            nr.save(note);
-        }else{
-            attach = as.createAttachment(file, auth.getName(), noteid);
-        }
+        attach = amazonClient.uploadFile(file,uuid.toString());
+        Attachment att = new Attachment();
+        att.setPath(attach);
+        att.setAttachment_id(uuid.toString());
+        note.getAttachments().add(att);
+        nr.save(note);
+
         if(attach != null){
             return ResponseEntity.status(201).body("");
         }else{
             JsonObject entity = new JsonObject();
-            metricsConfig.statsDClient().decrementCounter("create attachment");
+            metricsConfig.statsDClient().decrementCounter("Adding_attachments");
             entity.addProperty("Error", "Access denied.");
             return ResponseEntity.status(401).body(entity.toString());
         }
@@ -102,7 +103,7 @@ public class AttachmentController {
 
     @PutMapping("/note/{noteid}/attachment/{attachmentid}")
     public ResponseEntity<Object> updateAttachments(@RequestParam("file") MultipartFile file, Authentication auth, @PathVariable final String noteid, @PathVariable final String attachmentid) throws AppException, SQLException {
-        metricsConfig.statsDClient().incrementCounter("update attachment");
+        metricsConfig.statsDClient().incrementCounter("Update_attachments");
 
         if (file.isEmpty()) {
             JsonObject entity = new JsonObject();
@@ -134,7 +135,7 @@ public class AttachmentController {
             }
             if(status == null){
                 JsonObject entity = new JsonObject();
-                metricsConfig.statsDClient().decrementCounter("update attachment");
+                metricsConfig.statsDClient().decrementCounter("Update_attachments");
                 entity.addProperty("Error", "Attachment not found. Please enter a valid attachment ID");
                 return ResponseEntity.ok().body(entity.toString());
             }else{
@@ -144,7 +145,7 @@ public class AttachmentController {
             }
         }else{
             JsonObject entity = new JsonObject();
-            metricsConfig.statsDClient().decrementCounter("update attachment");
+            metricsConfig.statsDClient().decrementCounter("Update_attachments");
             entity.addProperty("Error", "Access denied.");
             return ResponseEntity.status(401).body(entity.toString());
         }
@@ -152,7 +153,7 @@ public class AttachmentController {
 
     @DeleteMapping("/note/{noteid}/attachment/{attachmentid}")
     public ResponseEntity<Object> deleteAttachments(Authentication auth, @PathVariable final String noteid, @PathVariable final String attachmentid) throws AppException, SQLException {
-        metricsConfig.statsDClient().incrementCounter("delete attachment");
+        metricsConfig.statsDClient().incrementCounter("Deleting_attachment");
         if (noteid == null || attachmentid == null) {
             JsonObject entity = new JsonObject();
             entity.addProperty("Error", "Please enter a valid note & attachment id");

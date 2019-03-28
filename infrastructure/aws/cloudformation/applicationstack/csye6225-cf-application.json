@@ -473,10 +473,10 @@
 				},{
 					"AttributeName": "exp_ts",
 					"KeyType": "RANGE"
-				},
+				}
 
 
-],
+                                ],
 				"ProvisionedThroughput": {
 					"ReadCapacityUnits": "5",
 					"WriteCapacityUnits": "5"
@@ -504,9 +504,30 @@
                         "Type" : "AWS::SNS::Topic",
                         "Properties" : {
                                  "DisplayName" : "password_reset",
-                                 "TopicName" : "password_reset"
+                                 "TopicName" : "password_reset",
+                                 "Subscription" : {
+					"Fn::GetAtt": [
+						"lambdafunction",
+						"Arn"
+					]
+				}
                   }
                  },
+
+             "lambdafunction" : {
+                        "Type" : "AWS::Lambda::Function",
+                        "Properties" : {
+                                        "Code" : "",
+                                        "Description" : "Csye6225 Lambda Function",
+                                        "FunctionName" : "NoteLambda",
+                                        "Handler" : "notelambda.NoteLambda::handleRequest",
+                                        "MemorySize" : "128",
+                                        "Role" : [{ "Ref": "lambdaServiceRole" }],
+                                        "Runtime" : "java8"
+ 
+                  }
+                 },
+
 		"myRDSInstance": {
 			"Type": "AWS::RDS::DBInstance",
 			"Properties": {

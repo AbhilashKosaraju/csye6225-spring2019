@@ -35,7 +35,7 @@ import java.util.List;
 @RestController
 public class ResetpwController {
 
-    private static final Logger logger = LoggerFactory.getLogger(AmazonClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(ResetpwController.class);
 
     @Autowired
     UserRepository userRepository;
@@ -60,7 +60,6 @@ public class ResetpwController {
 
             for(Topic topic: topics)
             {
-
                 if(topic.getTopicArn().endsWith("password_reset")){
                     System.out.print(user.getEmail());
                     PublishRequest req = new PublishRequest(topic.getTopicArn(),user.getEmail());
@@ -69,7 +68,6 @@ public class ResetpwController {
                 }
             }
             jsonObject.addProperty("message","Successful");
-
         }
         else{
             jsonObject.addProperty("message","User not found");

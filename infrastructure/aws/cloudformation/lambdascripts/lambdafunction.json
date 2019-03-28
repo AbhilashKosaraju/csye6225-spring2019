@@ -77,7 +77,7 @@
 			  "S3Key": "notelambda.zip"
 			},
 			"Runtime": "java8",
-			"FunctionName" : "csye6225-spring2019-lambda",
+			"FunctionName" : "NoteLambda",
 			"MemorySize" : 128,
 			"Timeout": 180
 			

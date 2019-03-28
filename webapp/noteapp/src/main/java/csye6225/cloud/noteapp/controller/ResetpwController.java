@@ -65,7 +65,7 @@ public class ResetpwController {
             logger.info("all topics : " + topics.isEmpty());
             for(Topic topic: topics)
             {
-                if(topic.getTopicArn().endsWith("password_reset")){
+                if(topic.getTopicArn().endsWith("SNSTopicResetPassword")){
                     logger.info("inside topic : " + topic.toString());
                     PublishRequest req = new PublishRequest(topic.getTopicArn(),user.getEmail());
                     snsClient.publish(req);

@@ -1,14 +1,12 @@
 #!/bin/bash
 
-sudo systemctl stop tomcat.service
+#sudo systemctl stop tomcat.service
 
-sudo rm -rf /opt/tomcat/webapps/docs  /opt/tomcat/webapps/examples /opt/tomcat/webapps/host-manager  /opt/tomcat/webapps/manager /opt/tomcat/webapps/ROOT /opt/tomcat/webapps/noteapp-1
+sudo rm -rf /opt/tomcat/webapps/docs  /opt/tomcat/webapps/examples /opt/tomcat/webapps/host-manager  /opt/tomcat/webapps/manager /opt/tomcat/webapps/ROOT* /opt/tomcat/webapps/noteapp-1
 
-sudo mv noteapp-1.war ROOT.war
+#sudo chown tomcat:tomcat /opt/tomcat/webapps/ROOT.war
 
-sudo chown tomcat:tomcat /opt/tomcat/webapps/ROOT.war
-
-sudo systemctl start tomcat.service
+#sudo systemctl start tomcat.service
 
 # cleanup log files
 sudo rm -rf /opt/tomcat/logs/catalina*

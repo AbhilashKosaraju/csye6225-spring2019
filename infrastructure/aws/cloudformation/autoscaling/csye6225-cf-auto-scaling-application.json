@@ -181,10 +181,7 @@
 										]
 									]
 								},
-								"chmod +x /opt/tomcat/bin/setenv.sh\n",
-								"#systemctl daemon-reload\n",
-								"systemctl enable tomcat.service\n",
-								"systemctl start tomcat.service\n"
+								"chmod +x /opt/tomcat/bin/setenv.sh\n"
 							]
 						]
 					}

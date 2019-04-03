@@ -12,3 +12,7 @@ hooks:
    - location: ./afterInstall.sh
      timeout: 180
      runas: root
+  ApplicationStart:
+   - location: ./applicationStart.sh
+     timeout: 180
+     runas: root

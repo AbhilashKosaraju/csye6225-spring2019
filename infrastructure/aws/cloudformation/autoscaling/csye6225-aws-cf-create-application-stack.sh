@@ -56,12 +56,14 @@ then
 fi
 
 
+
+
 subnet=$(aws ec2 describe-subnets --filters Name=vpc-id,Values=${vpcID})
 subnetid1=$(echo -e "$subnet" | jq '.Subnets[0].SubnetId' | tr -d '"')
 subnetid2=$(echo -e "$subnet" | jq '.Subnets[1].SubnetId' | tr -d '"')
 subnetid3=$(echo -e "$subnet" | jq '.Subnets[2].SubnetId' | tr -d '"')
 
-
+CERTIFICATE=$(aws acm list-certificates --query 'CertificateSummaryList[0].CertificateArn' --output text)
 
 if [ -z "$subnetid1" ]
 then
@@ -99,7 +101,7 @@ CDSR=$(aws iam get-role --role-name CodeDeployServiceRole --query "Role.Arn" --o
 
 # Create CloudFormation Stack
 echo "Validating template"
-TMP_code=`aws cloudformation validate-template --template-body file://./csye6225-cf-application.json`
+TMP_code=`aws cloudformation validate-template --template-body file://./csye6225-cf-auto-scaling-application.json`
 if [ -z "$TMP_code" ]
 then
 	echo "Template error exiting!"
@@ -110,7 +112,7 @@ echo "Cloudformation template validation success"
 echo "Now Creating CloudFormation Stack"
 
 
-CRTSTACK_Code=`aws cloudformation create-stack --stack-name $appStackName --template-body file://./csye6225-cf-application.json --capabilities CAPABILITY_NAMED_IAM --parameters   ParameterKey=KeyName,ParameterValue=$keyName ParameterKey=myVpc,ParameterValue=$vpcID ParameterKey=circleci,ParameterValue=$circleciuser ParameterKey=PublicSubnetKey1,ParameterValue=$subnetid1 ParameterKey=PublicSubnetKey2,ParameterValue=$subnetid2 ParameterKey=PublicSubnetKey3,ParameterValue=$subnetid3  ParameterKey=ImageID,ParameterValue=$imageid ParameterKey=Bucket,ParameterValue=arn:aws:s3:::$Bucket ParameterKey=Bucket1,ParameterValue=arn:aws:s3:::$Bucket/* ParameterKey=CDARN,ParameterValue=arn:aws:s3:::$CD_DOMAIN ParameterKey=CDARN1,ParameterValue=arn:aws:s3:::$CD_DOMAIN/* ParameterKey=Bucket3,ParameterValue=$Bucket ParameterKey=cdm,ParameterValue=$CD_DOMAIN ParameterKey=CDR,ParameterValue=$CDSR`
+CRTSTACK_Code=`aws cloudformation create-stack --stack-name $appStackName --template-body file://./csye6225-cf-auto-scaling-application.json --capabilities CAPABILITY_NAMED_IAM --parameters   ParameterKey=KeyName,ParameterValue=$keyName ParameterKey=myVpc,ParameterValue=$vpcID ParameterKey=circleci,ParameterValue=$circleciuser ParameterKey=PublicSubnetKey1,ParameterValue=$subnetid1 ParameterKey=PublicSubnetKey2,ParameterValue=$subnetid2 ParameterKey=PublicSubnetKey3,ParameterValue=$subnetid3  ParameterKey=ImageID,ParameterValue=$imageid ParameterKey=Bucket,ParameterValue=arn:aws:s3:::$Bucket ParameterKey=Bucket1,ParameterValue=arn:aws:s3:::$Bucket/* ParameterKey=CDARN,ParameterValue=arn:aws:s3:::$CD_DOMAIN ParameterKey=CDARN1,ParameterValue=arn:aws:s3:::$CD_DOMAIN/* ParameterKey=Bucket3,ParameterValue=$Bucket ParameterKey=CDR,ParameterValue=$CDSR ParameterKey=CERTIFICATE,ParameterValue=$CERTIFICATE ParameterKey=domain,ParameterValue=$DOMAIN_NAME`
 
 if [ -z "$CRTSTACK_Code" ]
 then

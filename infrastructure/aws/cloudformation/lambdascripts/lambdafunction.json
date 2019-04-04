@@ -70,6 +70,9 @@
 			"RoleName": "LambdaExecRole"
 		  }
 		},
+             
+                        
+
 		"LambdaFunction": {
 		  "Type": "AWS::Lambda::Function",
 		  "Properties": {
@@ -81,7 +84,7 @@
 			},
 			"Runtime": "java8",
 			"FunctionName" : "NoteLambda",
-			"MemorySize" : 128,
+			"MemorySize" : 256,
 			"Timeout": 180,
 			"Environment": {"Variables" : {
            					 "domainName" : { "Ref" : "DOMAINNAME" }

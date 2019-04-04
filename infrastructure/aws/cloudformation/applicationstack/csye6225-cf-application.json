@@ -92,8 +92,6 @@
 								"chmod +x ./install \n",
 								"./install auto \n",
 								"service codedeploy-agent start \n",
-								"systemctl start ntpd",
-								"systemctl enable ntpd",
 								"groupadd tomcat",
 								"useradd -M -s /bin/nologin -g tomcat -d /opt/tomcat tomcat",
 								"cd ~",
@@ -179,11 +177,9 @@
 									]
 								},
 								"chmod +x /opt/tomcat/bin/setenv.sh\n",
-								"systemctl daemon-reload",
-								"#systemctl start cloudwatch.service",
-								"#systemctl enable cloudwatch.service",
-								"systemctl enable tomcat.service",
-								"systemctl start tomcat.service",
+								"#systemctl daemon-reload\n",
+								"systemctl enable tomcat.service\n",
+								"systemctl start tomcat.service\n"
 							]
 						]
 					}

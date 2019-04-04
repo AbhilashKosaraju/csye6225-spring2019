@@ -76,7 +76,7 @@
 				"KeyName": {
 					"Ref": "KeyName"
 				},
-				"InstanceType": "t2.medium",
+				"InstanceType": "t2.micro",
 				"BlockDeviceMappings": [{
 					"DeviceName": "/dev/sda1",
 					"Ebs": {
@@ -183,6 +183,9 @@
 									]
 								},
 								"chmod +x /opt/tomcat/bin/setenv.sh\n",
+								"cd /opt/tomcat",
+								"touch demofile.txt",
+								"echo 'created' > demofile.txt",
 								"systemctl daemon-reload",
 								"systemctl enable tomcat.service",
 								"systemctl start tomcat.service"

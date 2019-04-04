@@ -169,10 +169,7 @@
 								"chmod +x /opt/tomcat/bin/setenv.sh\n",
 								"systemctl daemon-reload",
 								"systemctl enable tomcat.service",
-								"systemctl start tomcat.service",
-								"cd /opt/tomcat",
-								"touch demofile.txt",
-								"echo 'created' > demofile.txt"
+								"systemctl start tomcat.service"
 							]
 						]
 					}

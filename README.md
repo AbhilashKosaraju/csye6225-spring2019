@@ -51,11 +51,13 @@ The note app developed is being deployed with AWS CodeDeploy. Code Deploy Agent 
 ## Running Tests
 
 Unit tests in the JUnit framework have been developed to verify various working functionalities( REST endpoints) of the noteapp Web API. 
+
 Steps:
 - Navigate to the Junit test file in the application hierarchy.
 - Run the available Junit test cases on Junit framework.
 
 Penetration tests spaning various security aspects have been carried out with three attack vectors on the kali Linux distrubution.
+
 Steps: 
 - Login to the kali Linux distribution.
 - Select the required Penetration testing tool/technique from the applications.

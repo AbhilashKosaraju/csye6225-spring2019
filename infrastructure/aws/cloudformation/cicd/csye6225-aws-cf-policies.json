@@ -6,16 +6,17 @@
          "Type":"String"
       },
     "CDARN": {"Type":"String"},
-"CDARN1": {"Type": "String"},
-"Bucket":{"Type": "String"},
-"Bucket1":{"Type": "String"}
+    "CDARN1": {"Type": "String"},
+    "Bucket":{"Type": "String"},
+    "Bucket1":{"Type": "String"}
    },
+
    "Resources":{
       "Circleciec2ami":{
          "Type":"AWS::IAM::ManagedPolicy",
          "Properties":{
             "Description":"ami policy",
- "PolicyDocument":{
+            "PolicyDocument":{
 
             "Version":"2012-10-17",
             "Statement":[
@@ -65,8 +66,8 @@
                   "Ref":"circleci"
                }
             ]
-}
-  },
+         }
+       },
       "CircleCIUploadToS3":{
          "Type":"AWS::IAM::ManagedPolicy",
          "Properties":{
@@ -92,9 +93,9 @@
                   "Ref":"circleci"
                }
             ]
-         }
-      },
-      "CirlceCICodeDeploy":{
+         }},
+      
+        "CirlceCICodeDeploy":{
          "Type":"AWS::IAM::ManagedPolicy",
          "Properties":{
             "Description":"Policy for CricleCI to call codedeploy to initiate deployment on EC2",
@@ -198,9 +199,152 @@
                   "Ref":"circleci"
                }
             ]
-         }
-      }
-   }
-      }
-   
+         }} ,
+      
+        
+
+           "SNSAccess": {
+                       "Type":"AWS::IAM::ManagedPolicy",
+                       "Properties":{
+                       "Description":"To give sns access to the ec2 role",
+                       "Path":"/",
+                       "PolicyDocument":{                     
+                           "Version": "2012-10-17",
+                           "Statement": [
+                                      {
+                                       "Action": [
+                                 "sns:*"
+                                   ],
+                             "Effect": "Allow",
+                             "Resource": "*"
+                    }
+               ]
+               },
+                     "Roles": [{ "Ref": "codeDeployRole" }]	
+           }}, 
+
+           "LogRolePolicy": {
+			"Type": "AWS::IAM::ManagedPolicy",
+			"Properties": {
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+							"Action": [
+								"logs:CreateLogGroup",
+								"logs:CreateLogStream",
+								"logs:PutLogEvents",
+								"logs:DescribeLogStreams"
+							],
+							"Effect": "Allow",
+							"Resource": [
+								"arn:aws:logs:*:*:*"
+							]
+						},
+						{
+							"Effect": "Allow",
+							"Action": [
+								"cloudwatch:PutMetricAlarm",
+								"cloudwatch:PutMetricData"
+							],
+							"Resource": "*"
+						}
+					]
+				},
+				"ManagedPolicyName": "LogRolePolicy",
+				"Roles": [{ "Ref": "codeDeployRole" }]                             
+			}
+		},
+
+     	 "InstanceProfile": {
+			"Type": "AWS::IAM::InstanceProfile",
+			
+			"Properties": {
+				"InstanceProfileName": "ec2instanceprofile",
+				"Path": "/",
+				"Roles": [{
+					"Ref": "codeDeployRole"
+				}]
+			}
+		},
+
+        "codeDeployEc2S3": {
+			"Type": "AWS::IAM::ManagedPolicy",
+			"Properties": {
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Effect": "Allow",
+						"Action": [
+							"s3:Get*",
+							"s3:List*",
+							"s3:Put*",
+							"s3:Delete*"
+						],
+						"Resource": [{
+							"Ref": "CDARN"
+						}, {
+							"Ref": "CDARN1"
+						}, {
+							"Ref": "Bucket"
+						}, {
+							"Ref": "Bucket1"
+						}]
+					}]
+				},
+				"Roles": [{
+					"Ref": "codeDeployRole"
+				}],
+				"ManagedPolicyName": "CodeDeploy-Ec2-S3",
+				"Users": [{
+					"Ref": "circleci"
+				}]
+			}
+		},
+		"CodeDeployServiceRole": {
+			"Type": "AWS::IAM::Role",
+			"Properties": {
+				"RoleName": "CodeDeployServiceRole",
+				"AssumeRolePolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Effect": "Allow",
+						"Principal": {
+							"Service": "codedeploy.amazonaws.com"
+						},
+						"Action": [
+							"sts:AssumeRole"
+						]
+					}]
+				},
+				"ManagedPolicyArns": [
+					"arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
+				],
+				"Path": "/"
+			}
+		},
+
+
+
+
+         "codeDeployRole": {
+			"Type": "AWS::IAM::Role",
+			"Properties": {
+				"AssumeRolePolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Effect": "Allow",
+						"Principal": {
+							"Service": ["ec2.amazonaws.com"]
+						},
+						"Action": [
+							"sts:AssumeRole"
+						]
+					}]
+				},
+				"RoleName": "CodeDeployEc2ServiceRole",
+				"Path": "/"
+			}
+		}
+      }}
+ 
 

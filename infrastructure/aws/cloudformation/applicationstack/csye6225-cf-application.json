@@ -47,6 +47,9 @@
 		},
 		"Bucket3": {
 			"Type": "String"
+		},
+               "CDR": {
+			"Type": "String"
 		}
 	},
 	"Conditions": {
@@ -118,8 +121,7 @@
 								"echo 'User=tomcat' >> tomcat.service",
 								"echo 'Group=tomcat' >> tomcat.service",
 								"echo 'UMask=0007' >> tomcat.service",
-								"echo 'RestartSec=10' >> tomcat.service",
-								"echo 'Restart=always' >> tomcat.service",
+								"echo 'Restart=on-failure' >> tomcat.service",
 								"echo '[Install]' >> tomcat.service",
 								"echo 'WantedBy=multi-user.target' >> tomcat.service",
 								"echo '#!/bin/sh' >> /opt/tomcat/bin/setenv.sh \n",
@@ -207,132 +209,9 @@
 				}]
 			}
 		},
-		"codeDeployRole": {
-			"Type": "AWS::IAM::Role",
-			"Properties": {
-				"AssumeRolePolicyDocument": {
-					"Version": "2012-10-17",
-					"Statement": [{
-						"Effect": "Allow",
-						"Principal": {
-							"Service": ["ec2.amazonaws.com"]
-						},
-						"Action": [
-							"sts:AssumeRole"
-						]
-					}]
-				},
-				"RoleName": "CodeDeployEc2ServiceRole",
-				"Path": "/"
-			}
-		},
-                  
+    
 
-		"LogRolePolicy": {
-			"Type": "AWS::IAM::ManagedPolicy",
-			"Properties": {
-				"PolicyDocument": {
-					"Version": "2012-10-17",
-					"Statement": [{
-							"Action": [
-								"logs:CreateLogGroup",
-								"logs:CreateLogStream",
-								"logs:PutLogEvents",
-								"logs:DescribeLogStreams"
-							],
-							"Effect": "Allow",
-							"Resource": [
-								"arn:aws:logs:*:*:*"
-							]
-						},
-						{
-							"Effect": "Allow",
-							"Action": [
-								"cloudwatch:PutMetricAlarm",
-								"cloudwatch:PutMetricData"
-							],
-							"Resource": "*"
-						}
-					]
-				},
-				"ManagedPolicyName": "LogRolePolicy",
-				"Roles": [{
-					"Ref": "codeDeployRole"
-				}]
-                               
-			}
-		},
-		"InstanceProfile": {
-			"Type": "AWS::IAM::InstanceProfile",
-			"DependsOn": "codeDeployRole",
-			"Properties": {
-				"InstanceProfileName": "ec2instanceprofile",
-				"Path": "/",
-				"Roles": [{
-					"Ref": "codeDeployRole"
-				}]
-			}
-		},
-		"codeDeployEc2S3": {
-			"Type": "AWS::IAM::ManagedPolicy",
-			"Properties": {
-				"PolicyDocument": {
-					"Version": "2012-10-17",
-					"Statement": [{
-						"Effect": "Allow",
-						"Action": [
-							"s3:Get*",
-							"s3:List*",
-							"s3:Put*",
-							"s3:Delete*"
-						],
-						"Resource": [{
-							"Ref": "CDARN"
-						}, {
-							"Ref": "CDARN1"
-						}, {
-							"Ref": "Bucket"
-						}, {
-							"Ref": "Bucket1"
-						}]
-					}]
-				},
-				"Roles": [{
-					"Ref": "codeDeployRole"
-				}],
-				"ManagedPolicyName": "CodeDeploy-Ec2-S3",
-				"Users": [{
-					"Ref": "circleci"
-				}]
-			}
-		},
-		"CodeDeployServiceRole": {
-			"Type": "AWS::IAM::Role",
-			"Properties": {
-				"RoleName": "CodeDeployServiceRole",
-				"AssumeRolePolicyDocument": {
-					"Version": "2012-10-17",
-					"Statement": [{
-						"Effect": "Allow",
-						"Principal": {
-							"Service": "codedeploy.amazonaws.com"
-						},
-						"Action": [
-							"sts:AssumeRole"
-						]
-					}]
-				},
-				"ManagedPolicyArns": [
-					"arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
-				],
-				"Path": "/"
-			}
-		},
-
-                
-				
-
-		"codeDeployApp": {
+               "codeDeployApp": {
 			"Type": "AWS::CodeDeploy::Application",
 			"Properties": {
 				"ApplicationName": "csye6225-webapp",
@@ -366,10 +245,7 @@
 					"DeploymentOption": "WITHOUT_TRAFFIC_CONTROL"
 				},
 				"ServiceRoleArn": {
-					"Fn::GetAtt": [
-						"CodeDeployServiceRole",
-						"Arn"
-					]
+					"Ref" : "CDR"
 				},
 				"AutoRollbackConfiguration": {
 					"Enabled": "True",

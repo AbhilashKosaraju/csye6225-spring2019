@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="2.8" jmeter="2.13.20170723">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.1.1 r1855137">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
@@ -17,7 +17,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">10000</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">500</stringProp>
+        <stringProp name="ThreadGroup.num_threads">5</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1554330753000</longProp>
         <longProp name="ThreadGroup.end_time">1554330753000</longProp>
@@ -42,8 +42,6 @@
           </elementProp>
           <stringProp name="HTTPSampler.domain">csye6225-spring2019-patilvr.me</stringProp>
           <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/noteapp-1/user/register</stringProp>
@@ -52,8 +50,9 @@
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
           <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <boolProp name="HTTPSampler.monitor">false</boolProp>
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree>
           <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Random Variable" enabled="true">
@@ -150,10 +149,8 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">csye6225-spring2019-patilvr.me</stringProp>
+          <stringProp name="HTTPSampler.domain">csye6225-spring2019-dongak.me</stringProp>
           <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/noteapp-1/user/register</stringProp>
@@ -162,8 +159,9 @@
           <boolProp name="HTTPSampler.auto_redirects">true</boolProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
           <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <boolProp name="HTTPSampler.monitor">false</boolProp>
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree/>
         <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
@@ -238,10 +236,8 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">csye6225-spring2019-patilvr.me</stringProp>
+          <stringProp name="HTTPSampler.domain">csye6225-spring2019-dongak.me</stringProp>
           <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/noteapp-1/note</stringProp>
@@ -250,14 +246,15 @@
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
           <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <boolProp name="HTTPSampler.monitor">false</boolProp>
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree/>
         <AuthManager guiclass="AuthPanel" testclass="AuthManager" testname="HTTP Authorization Manager" enabled="true">
           <collectionProp name="AuthManager.auth_list">
             <elementProp name="" elementType="Authorization">
-              <stringProp name="Authorization.url">https://csye6225-spring2019-patilvr.me/noteapp-1/note</stringProp>
+              <stringProp name="Authorization.url">https://csye6225-spring2019-dongak.me/noteapp-1/note</stringProp>
               <stringProp name="Authorization.username">patil.vr@gmail.com</stringProp>
               <stringProp name="Authorization.password">Something@123</stringProp>
               <stringProp name="Authorization.domain"></stringProp>
@@ -325,32 +322,31 @@
       </ThreadGroup>
       <hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="true">
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-            <collectionProp name="Arguments.arguments"/>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">csye6225-spring2019-patilvr.me</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/noteapp-1/note/note_id/attachment</stringProp>
-          <stringProp name="HTTPSampler.method">GET</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
           <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
             <collectionProp name="HTTPFileArgs.files">
-              <elementProp name="/home/vrushali339295/Downloads/csye6225-cf-parameters.json" elementType="HTTPFileArg">
-                <stringProp name="File.path">/home/vrushali339295/Downloads/csye6225-cf-parameters.json</stringProp>
+              <elementProp name="/home/keyur/Desktop/scripts/config.yml" elementType="HTTPFileArg">
+                <stringProp name="File.path">/home/keyur/Desktop/scripts/config.yml</stringProp>
                 <stringProp name="File.paramname">file</stringProp>
-                <stringProp name="File.mimetype">json</stringProp>
+                <stringProp name="File.mimetype">yml</stringProp>
               </elementProp>
             </collectionProp>
           </elementProp>
-          <boolProp name="HTTPSampler.monitor">false</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">csye6225-spring2019-dongak.me</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/noteapp-1/note/0badab66-c6d2-43e8-841d-7171f7c25860/attachment</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree/>
         <UserParameters guiclass="UserParametersGui" testclass="UserParameters" testname="User Parameters" enabled="true">
@@ -397,16 +393,9 @@
         <AuthManager guiclass="AuthPanel" testclass="AuthManager" testname="HTTP Authorization Manager" enabled="true">
           <collectionProp name="AuthManager.auth_list">
             <elementProp name="" elementType="Authorization">
-              <stringProp name="Authorization.url">https://csye6225-spring2019-patilvr.me/noteapp-1/note/note_id/attachment/attachment_id</stringProp>
+              <stringProp name="Authorization.url">https://csye6225-spring2019-dongak.me/noteapp-1/note/0badab66-c6d2-43e8-841d-7171f7c25860/attachment</stringProp>
               <stringProp name="Authorization.username">patil.vr@gmail.com</stringProp>
               <stringProp name="Authorization.password">Something@123</stringProp>
-              <stringProp name="Authorization.domain"></stringProp>
-              <stringProp name="Authorization.realm"></stringProp>
-            </elementProp>
-            <elementProp name="" elementType="Authorization">
-              <stringProp name="Authorization.url"></stringProp>
-              <stringProp name="Authorization.username"></stringProp>
-              <stringProp name="Authorization.password"></stringProp>
               <stringProp name="Authorization.domain"></stringProp>
               <stringProp name="Authorization.realm"></stringProp>
             </elementProp>

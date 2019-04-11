@@ -1,0 +1,2 @@
+# JMeter generated Authorization file
+https://csye6225-spring2019-kosarajua.me/noteapp-1/note	${email}	${password}			BASIC

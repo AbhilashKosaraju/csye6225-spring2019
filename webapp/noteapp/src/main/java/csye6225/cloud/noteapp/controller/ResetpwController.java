@@ -48,7 +48,7 @@ public class ResetpwController {
     @Autowired
     private UserService userService;
 
-    @PostMapping(value = "/reset")
+    @PostMapping(value = "/pwdreset")
     public ResponseEntity<Object> resetPassword(@Valid @RequestBody ResetUser user) throws AppException {
 
         metricsConfig.statsDClient().incrementCounter("ResetPassword_API");

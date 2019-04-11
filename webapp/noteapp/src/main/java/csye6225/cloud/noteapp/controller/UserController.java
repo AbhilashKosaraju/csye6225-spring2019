@@ -91,7 +91,7 @@ public class UserController {
 
     }
 
-    @GetMapping("/")
+    @GetMapping("/time")
     public String getTime(){
         metricsConfig.statsDClient().incrementCounter("Get_time");
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());

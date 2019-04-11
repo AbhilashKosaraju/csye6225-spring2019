@@ -27,10 +27,10 @@ Adding attachements to the created notes has been enabled.
 Different profiles to run the application on local memory and on AWS S3 bucket has been established.
 
 Infrastructure as Code:
-A new cloud formation template in json format has been used to setup application resources.
 A shell script has been employed to create and configure required application resources using AWS CloudFormation.
 A shell script to delete the application CloudFormation stack has been created.
-The application stack includes, EC2 instance, DynamoDB Table, S3 Bucket and RDS Instance with the specified configurations to support the REST API deployment. 
+
+The application stack includes EC2 instance, DynamoDB Table, S3 Bucket and RDS Instance with the specified configurations to support the REST API deployment. 
 Security groups for Web servers and DB Servers have been created as per the requirements. 
 Packer build template has been updated to install the Unified CloudWatch Agent in the AMIs.
 systemd service has been employed to start, stop and restart the CloudWatch agent.
@@ -44,6 +44,7 @@ Steps :
 - Run the "csye6225-aws-cf-policies.sh", a bash script as a part of cloudformation service for establishing appropriate policies to the user roles in AWS IAM. 
 - Run the "csye6225-aws-cf-create-stack.sh", a bash script as a part of cloudformation service to provision network resources for the web applicaiton. 
 - Run the "csye6225-aws-cf-create-application-stack.sh", a bash script as a part of cloudformation service to creation application specific resources on the cloud for the web application.
+- Run the "csye6225-aws-cf-create-waf-stack.sh", a bash script as a part of cloudformation service to creation WAF.
 
 ## Deploy Instructions
 The note app developed is being deployed with AWS CodeDeploy. Code Deploy Agent from us-east-1 has been added to the centos-ami-template.json to install the agent in the AMI being built. AWS CodeDeploy appspec.yml file has been created and placed in the root of the noteapp repository to enable the deployment of the web application on EC2 instances. An S3 bucket with the specified naming conventions has been created in AWS to hold the deployed files on cloud.
@@ -70,7 +71,7 @@ The Noteapp repository, a repository for the AMI repository have been linked to 
 The AWS credentials and the bucket name for sending the builds have been added to the repository environemnt variables.  
 
 Steps: 
-- Naigate the csye6225-spring2019 repo. 
+- Navigate to proper repo. 
 - Execute the curl command to initiate the builds on the Circle CI.
 
 curl -u 0a1d67cdO_PERSONAL_OR_PROJECT_TOKEN_cdbc356b0f5 \
